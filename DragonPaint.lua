@@ -1,16 +1,21 @@
 local thisFile = "DragonPaint.lua"
-local dpVersion = "0.01"
-local dpVdate = "6/24/22"
+local dpVersion = "0.02 (in progress)"
+local dpVdate = "6/25/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 --local strict = require "C:/Program Files/lua54/k_libraries/strict"
+--print(strict.version)
 local strict = require "strict"
---local version = strict.version
+
 
 --[[ Design Notes ------------------------------------
 This program requires the Love2D framework.
 
 let the drImages be Global...
+
+?create an option to "save" & replay favorites.
+perhaps "rate" from 0 (ignored), 1 "good/interesting", to 2 "especially good/interesting"
+save little thumbnail images w/codes?
 
 --UI--
 [space] to change color
@@ -26,6 +31,7 @@ then make a bigger font, add colors.. whatever
 maybe? figure out how to load fancier fonts?
 (maybe make some border art etc?  fancier background? gradient?)
 
+
 ------------------------------------------------------
 other stuff:
 
@@ -37,7 +43,7 @@ fade to new colors more slowly?
 
 -- a global table with some namespace protection
 -- all true globals (accessible outside this file) go inside here:
-ekGlobals = {
+EKglobals = {
     myGlobal1 = "ek's global one",
     myGlobal2 = "ek's global two"
 }
@@ -77,6 +83,8 @@ local function loadDragonImageList() -- store image regions & colors
     local drImage = nil
     local rColorT = {}
 
+    -- [] maybe create a "file list" & a loop, to make updates neater?
+
     drImage = love.graphics.newImage("images/dragontestLines.png")
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
@@ -104,8 +112,19 @@ local function loadDragonImageList() -- store image regions & colors
 
 end
 
+local function reColorDragonImageList()
+
+    print ""
+    DrImgList[2].color = getRandomColor()
+    DrImgList[3].color = getRandomColor()
+    DrImgList[4].color = getRandomColor()
+
+end
+
 
 function love.load()
+    love.window.setTitle("Dragon Paint")
+
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
     love.graphics.setBackgroundColor(1,1,1)
@@ -120,17 +139,20 @@ end
 
 function love.draw()
 
+    local xloc = 90 -- or we could Calculate the center here instead...
+    local yloc = 70
+
     love.graphics.setColor( unpack(DrImgList[1].color) )
-    love.graphics.draw(DrImgList[1].image, 100, 100, 0, 0.5, 0.5)
+    love.graphics.draw(DrImgList[1].image, xloc, yloc, 0, 0.5, 0.5)
 
     love.graphics.setColor( unpack(DrImgList[2].color) )
-    love.graphics.draw(DrImgList[2].image, 100, 100, 0, 0.5, 0.5)
+    love.graphics.draw(DrImgList[2].image, xloc, yloc, 0, 0.5, 0.5)
 
     love.graphics.setColor( unpack(DrImgList[3].color) )
-    love.graphics.draw(DrImgList[3].image, 100, 100, 0, 0.5, 0.5)
+    love.graphics.draw(DrImgList[3].image, xloc, yloc, 0, 0.5, 0.5)
 
     love.graphics.setColor( unpack(DrImgList[4].color) )
-    love.graphics.draw(DrImgList[4].image, 100, 100, 0, 0.5, 0.5)
+    love.graphics.draw(DrImgList[4].image, xloc, yloc, 0, 0.5, 0.5)
 
 end
 
@@ -138,7 +160,7 @@ end
 function love.keypressed(key)
 
     if key == "space" then
-        love.event.quit()
+        reColorDragonImageList() 
     end
 
     if key == "escape" then
