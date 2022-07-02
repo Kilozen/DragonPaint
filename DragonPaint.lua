@@ -50,7 +50,8 @@ EKglobals = {
 
 local localGlobal = "global ONLY within this file"
 
-local DrImgList = {} -- locally "global" table of dragon image info
+-- locally "global" table of dragon image info 
+local DrImgList = {}  --{region image,  color} 
 
 
 
@@ -70,6 +71,7 @@ local function getRandomColor() -- returns a color as a Table
     return colorT
 end
 
+-- old.. Deleteable? 
 local function setRandomColor()
 
     local rColor = getRandomColor()
@@ -80,28 +82,34 @@ end
 
 local function loadDragonImageList() -- store image regions & colors
 
-    local drImage = nil
-    local rColorT = {}
+    local drImage = nil  -- dragon Image var 
+    local rColorT = {}   -- table to hold 3 parts of an RGB color 
 
-    -- [] maybe create a "file list" & a loop, to make updates neater?
+    local imfile = {
+        outlines  = "images/dragontestLines.png",
+        primary   = "images/dragontestPrimary.png",
+        secondary = "images/dragontestSecondary.png",
+        tertiary  = "images/dragontestTertiary.png"
+    }
 
-    drImage = love.graphics.newImage("images/dragontestLines.png")
+    drImage = love.graphics.newImage(imfile.outlines)
+    --drImage = love.graphics.newImage("images/dragontestLines.png")
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
     rColorT = {1,1,1}
     DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage("images/dragontestPrimary.png")
+    drImage = love.graphics.newImage(imfile.primary)
     rColorT = getRandomColor()
     DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage("images/dragontestSecondary.png")
+    drImage = love.graphics.newImage(imfile.secondary)
     rColorT = getRandomColor()
     DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
 
 
-    drImage = love.graphics.newImage("images/dragontestTertiary.png")
+    drImage = love.graphics.newImage(imfile.tertiary)
     --local width = drImage:getWidth()
     --local height = drImage:getHeight()
     --print("width, height: ", width, height)
