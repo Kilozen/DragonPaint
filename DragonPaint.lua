@@ -85,6 +85,13 @@ local function loadDragonImageList() -- store image regions & colors
     local drImage = nil  -- dragon Image var 
     local rColorT = {}   -- table to hold 3 parts of an RGB color 
 
+    local old_imfile = {
+        outlines  = "images/dragontestLines.png",
+        primary   = "images/dragontestPrimary.png",
+        secondary = "images/dragontestSecondary.png",
+        tertiary  = "images/dragontestTertiary.png"
+    }
+
     local imfile = {
         outlines  = "images/dragontestLines.png",
         primary   = "images/dragontestPrimary.png",
@@ -122,6 +129,7 @@ end
 
 local function reColorDragonImageList()
 
+    -- [] try re-writing this both with a pairs() loop, and with explicit part names. 
     print ""
     DrImgList[2].color = getRandomColor()
     DrImgList[3].color = getRandomColor()
@@ -130,7 +138,8 @@ local function reColorDragonImageList()
 end
 
 
-function love.load()
+function love.load() -- this is where Love2D does it's FIRST initialization. 
+
     love.window.setTitle("Dragon Paint")
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
@@ -141,13 +150,14 @@ function love.load()
     loadDragonImageList()
 end
 
-function love.update(dt)
 
+function love.update(dt) -- Love2D calls this 60 times per second. 
+    -- nothing needed here so far... 
 end
 
-function love.draw()
+function love.draw() -- Love2D calls this 60 times per second. 
 
-    local xloc = 90 -- or we could Calculate the center here instead...
+    local xloc = 90 -- or we could Calculate the window center here instead...
     local yloc = 70
 
     love.graphics.setColor( unpack(DrImgList[1].color) )
@@ -168,7 +178,7 @@ end
 function love.keypressed(key)
 
     if key == "space" then
-        reColorDragonImageList() 
+        reColorDragonImageList()
     end
 
     if key == "escape" then
