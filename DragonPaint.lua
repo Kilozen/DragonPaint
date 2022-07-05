@@ -93,10 +93,10 @@ local function loadDragonImageList() -- store image regions & colors
     }
 
     local imfile = {
-        outlines  = "images/dragontestLines.png",
-        primary   = "images/dragontestPrimary.png",
-        secondary = "images/dragontestSecondary.png",
-        tertiary  = "images/dragontestTertiary.png"
+        outlines  = "images/simpleAgricosLines.png",
+        primary   = "images/simpleAgricosPrimary.png",
+        secondary = "images/simpleAgricosSecondary.png",
+        tertiary  = "images/simpleAgricosTertiary.png"
     }
 
     drImage = love.graphics.newImage(imfile.outlines)
@@ -157,8 +157,8 @@ end
 
 function love.draw() -- Love2D calls this 60 times per second. 
 
-    local xloc = 90 -- or we could Calculate the window center here instead...
-    local yloc = 70
+    local xloc = 40 -- or we could Calculate the window center here instead...
+    local yloc = 30
 
     love.graphics.setColor( unpack(DrImgList[1].color) )
     love.graphics.draw(DrImgList[1].image, xloc, yloc, 0, 0.5, 0.5)
