@@ -1,6 +1,7 @@
 local thisFile = "DragonPaint.lua"
-local dpVersion = "0.02 (in progress)"
-local dpVdate = "6/25/22"
+local gameTitle = "DragonPaint"
+local dpVersion = "0.03 (in progress)"
+local dpVdate = "7/10/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 --local strict = require "C:/Program Files/lua54/k_libraries/strict"
@@ -41,18 +42,9 @@ alternate 2 'idle' images? (steady breathing, or occational look/blink?)
 fade to new colors more slowly?
 --]] -------------------------------------------------
 
--- a global table with some namespace protection
--- all true globals (accessible outside this file) go inside here:
-EKglobals = {
-    myGlobal1 = "ek's global one",
-    myGlobal2 = "ek's global two"
-}
 
-local localGlobal = "global ONLY within this file"
-
--- locally "global" table of dragon image info 
-local DrImgList = {}  --{region image,  color} 
-
+-- dragon image info 
+local DraImgList = {} -- a table of 4 regions: {region image,  color} 
 
 
 local function getRandomColor() -- returns a color as a Table
@@ -85,14 +77,15 @@ local function loadDragonImageList() -- store image regions & colors
     local drImage = nil  -- dragon Image var 
     local rColorT = {}   -- table to hold 3 parts of an RGB color 
 
-    local old_imfile = {
+    -- [] maybe make a "config file" of available images? 
+    local imfile = {
         outlines  = "images/dragontestLines.png",
         primary   = "images/dragontestPrimary.png",
         secondary = "images/dragontestSecondary.png",
         tertiary  = "images/dragontestTertiary.png"
     }
 
-    local imfile = {
+    local imfile2 = {
         outlines  = "images/simpleAgricosLines.png",
         primary   = "images/simpleAgricosPrimary.png",
         secondary = "images/simpleAgricosSecondary.png",
@@ -105,15 +98,15 @@ local function loadDragonImageList() -- store image regions & colors
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
     rColorT = {1,1,1}
-    DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
+    DraImgList["outlines"] = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(imfile.primary)
     rColorT = getRandomColor()
-    DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
+    DraImgList["primary"] = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(imfile.secondary)
     rColorT = getRandomColor()
-    DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
+    DraImgList["secondary"] = { image = drImage, color = rColorT }
 
 
     drImage = love.graphics.newImage(imfile.tertiary)
@@ -123,24 +116,21 @@ local function loadDragonImageList() -- store image regions & colors
     rColorT = getRandomColor()
     --print("rColorT =", rColorT)
     --print("rColorT = ", unpack(rColorT))
-    DrImgList[#DrImgList + 1] = { image = drImage, color = rColorT }
+    DraImgList["tertiary"] = { image = drImage, color = rColorT }
 
 end
 
 local function reColorDragonImageList()
-
-    -- [] try re-writing this both with a pairs() loop, and with explicit part names. 
     print ""
-    DrImgList[2].color = getRandomColor()
-    DrImgList[3].color = getRandomColor()
-    DrImgList[4].color = getRandomColor()
-
+    DraImgList["primary"].color = getRandomColor()
+    DraImgList["secondary"].color = getRandomColor()
+    DraImgList["tertiary"].color = getRandomColor()
 end
 
 
 function love.load() -- this is where Love2D does it's FIRST initialization. 
 
-    love.window.setTitle("Dragon Paint")
+    love.window.setTitle(gameTitle.." "..dpVersion)
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
@@ -148,6 +138,16 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     love.graphics.setColor(0,0,0)
 
     loadDragonImageList()
+
+    -- TEMPORARY -- 
+    print ""
+    print("window width/2 = ".. math.floor(love.graphics.getWidth()/2) )
+    print("window height/2 = ".. math.floor(love.graphics.getHeight()/2) )
+
+    local img = DraImgList["outlines"].image
+    print("0.5 image width/2 = ".. math.floor(img:getWidth()/2 *0.5) )
+    print("0.5 image height/2 = ".. math.floor(img:getHeight()/2 *0.5) )
+    print ""
 end
 
 
@@ -157,20 +157,36 @@ end
 
 function love.draw() -- Love2D calls this 60 times per second. 
 
-    local xloc = 40 -- or we could Calculate the window center here instead...
+    -- how much the images need to be scaled 
+    local xscale = 0.5
+    local yscale = 0.5
+
+    -- image placement, declare with default values, then recalculate below. 
+    local xloc = 40
     local yloc = 30
 
-    love.graphics.setColor( unpack(DrImgList[1].color) )
-    love.graphics.draw(DrImgList[1].image, xloc, yloc, 0, 0.5, 0.5)
+    -- how far is the image center from the window center? 
+    -- draw it that far to the right... 
+    local img = DraImgList["outlines"].image
 
-    love.graphics.setColor( unpack(DrImgList[2].color) )
-    love.graphics.draw(DrImgList[2].image, xloc, yloc, 0, 0.5, 0.5)
+    -- x-offset needed is the Window center minus the Image center. 
+    xloc = (love.graphics.getWidth()/2)  - (math.floor(img:getWidth()/2 * xscale))
+    yloc = (love.graphics.getHeight()/2) - (math.floor(img:getHeight()/2 * yscale))
+    -- (the above could be calculated  once, then passed in)
 
-    love.graphics.setColor( unpack(DrImgList[3].color) )
-    love.graphics.draw(DrImgList[3].image, xloc, yloc, 0, 0.5, 0.5)
 
-    love.graphics.setColor( unpack(DrImgList[4].color) )
-    love.graphics.draw(DrImgList[4].image, xloc, yloc, 0, 0.5, 0.5)
+    -- Draw the Dragon parts 
+    love.graphics.setColor( unpack(DraImgList["outlines"].color) )
+    love.graphics.draw(DraImgList["outlines"].image, xloc, yloc, 0, xscale, yscale)
+
+    love.graphics.setColor( unpack(DraImgList["primary"].color) )
+    love.graphics.draw(DraImgList["primary"].image, xloc, yloc, 0, xscale, yscale)
+
+    love.graphics.setColor( unpack(DraImgList["secondary"].color) )
+    love.graphics.draw(DraImgList["secondary"].image, xloc, yloc, 0, xscale, yscale)
+
+    love.graphics.setColor( unpack(DraImgList["tertiary"].color) )
+    love.graphics.draw(DraImgList["tertiary"].image, xloc, yloc, 0, xscale, yscale)
 
 end
 
