@@ -44,7 +44,7 @@ fade to new colors more slowly?
 
 
 -- dragon image info 
-local DraImgList = {} -- a table of 4 regions: {region image,  color} 
+local DraImgList = {} -- a table of 4 body regions: {region image,  color} 
 
 
 local function getRandomColor() -- returns a color as a Table
@@ -98,15 +98,15 @@ local function loadDragonImageList() -- store image regions & colors
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
     rColorT = {1,1,1}
-    DraImgList["outlines"] = { image = drImage, color = rColorT }
+    DraImgList.outlines = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(imfile.primary)
     rColorT = getRandomColor()
-    DraImgList["primary"] = { image = drImage, color = rColorT }
+    DraImgList.primary = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(imfile.secondary)
     rColorT = getRandomColor()
-    DraImgList["secondary"] = { image = drImage, color = rColorT }
+    DraImgList.secondary = { image = drImage, color = rColorT }
 
 
     drImage = love.graphics.newImage(imfile.tertiary)
@@ -116,15 +116,15 @@ local function loadDragonImageList() -- store image regions & colors
     rColorT = getRandomColor()
     --print("rColorT =", rColorT)
     --print("rColorT = ", unpack(rColorT))
-    DraImgList["tertiary"] = { image = drImage, color = rColorT }
+    DraImgList.tertiary = { image = drImage, color = rColorT }
 
 end
 
 local function reColorDragonImageList()
     print ""
-    DraImgList["primary"].color = getRandomColor()
-    DraImgList["secondary"].color = getRandomColor()
-    DraImgList["tertiary"].color = getRandomColor()
+    DraImgList.primary.color = getRandomColor()
+    DraImgList.secondary.color = getRandomColor()
+    DraImgList.tertiary.color = getRandomColor()
 end
 
 
@@ -144,7 +144,7 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("window width/2 = ".. math.floor(love.graphics.getWidth()/2) )
     print("window height/2 = ".. math.floor(love.graphics.getHeight()/2) )
 
-    local img = DraImgList["outlines"].image
+    local img = DraImgList.outlines.image
     print("0.5 image width/2 = ".. math.floor(img:getWidth()/2 *0.5) )
     print("0.5 image height/2 = ".. math.floor(img:getHeight()/2 *0.5) )
     print ""
@@ -167,7 +167,7 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     -- how far is the image center from the window center? 
     -- draw it that far to the right... 
-    local img = DraImgList["outlines"].image
+    local img = DraImgList.outlines.image
 
     -- x-offset needed is the Window center minus the Image center. 
     xloc = (love.graphics.getWidth()/2)  - (math.floor(img:getWidth()/2 * xscale))
@@ -176,17 +176,17 @@ function love.draw() -- Love2D calls this 60 times per second.
 
 
     -- Draw the Dragon parts 
-    love.graphics.setColor( unpack(DraImgList["outlines"].color) )
-    love.graphics.draw(DraImgList["outlines"].image, xloc, yloc, 0, xscale, yscale)
+    love.graphics.setColor( unpack(DraImgList.outlines.color) )
+    love.graphics.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList["primary"].color) )
-    love.graphics.draw(DraImgList["primary"].image, xloc, yloc, 0, xscale, yscale)
+    love.graphics.setColor( unpack(DraImgList.primary.color) )
+    love.graphics.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList["secondary"].color) )
-    love.graphics.draw(DraImgList["secondary"].image, xloc, yloc, 0, xscale, yscale)
+    love.graphics.setColor( unpack(DraImgList.secondary.color) )
+    love.graphics.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList["tertiary"].color) )
-    love.graphics.draw(DraImgList["tertiary"].image, xloc, yloc, 0, xscale, yscale)
+    love.graphics.setColor( unpack(DraImgList.tertiary.color) )
+    love.graphics.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 end
 
