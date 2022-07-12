@@ -10,36 +10,10 @@ local strict = require "strict"
 
 
 --[[ Design Notes ------------------------------------
-This program requires the Love2D framework.
+This program requires the Love2D framework. 
+(See the GitHub Wiki for more info.)
 
-let the drImages be Global...
-
-?create an option to "save" & replay favorites.
-perhaps "rate" from 0 (ignored), 1 "good/interesting", to 2 "especially good/interesting"
-save little thumbnail images w/codes?
-
---UI--
-[space] to change color
-[esc] to exit
-
-[] Eva Task:
-make the program screen look nicer.
-find links to L2D documentation (& keep your own notes)
-in the UI.lua module...
-make a Screen Title:
-to start, probably just use  love.graphics.print()
-then make a bigger font, add colors.. whatever
-maybe? figure out how to load fancier fonts?
-(maybe make some border art etc?  fancier background? gradient?)
-
-
-------------------------------------------------------
-other stuff:
-
-maybe "animate" the image a bit? move,rotate,shear? tween? blink?
-alternate 2 'idle' images? (steady breathing, or occational look/blink?)
-
-fade to new colors more slowly?
+Let the DraImgList be Global. 
 --]] -------------------------------------------------
 
 
@@ -63,13 +37,6 @@ local function getRandomColor() -- returns a color as a Table
     return colorT
 end
 
--- old.. Deleteable? 
-local function setRandomColor()
-
-    local rColor = getRandomColor()
-    love.graphics.setColor(rColor)
-end
-
 
 
 local function loadDragonImageList() -- store image regions & colors
@@ -78,14 +45,14 @@ local function loadDragonImageList() -- store image regions & colors
     local rColorT = {}   -- table to hold 3 parts of an RGB color 
 
     -- [] maybe make a "config file" of available images? 
-    local imfile = {
+    local imfile_old = {
         outlines  = "images/dragontestLines.png",
         primary   = "images/dragontestPrimary.png",
         secondary = "images/dragontestSecondary.png",
         tertiary  = "images/dragontestTertiary.png"
     }
 
-    local imfile2 = {
+    local imfile = {
         outlines  = "images/simpleAgricosLines.png",
         primary   = "images/simpleAgricosPrimary.png",
         secondary = "images/simpleAgricosSecondary.png",
