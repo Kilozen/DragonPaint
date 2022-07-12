@@ -40,3 +40,4 @@ luac.out
 *.hex
 
 .vscode/extensions.json
+.DS_Store
