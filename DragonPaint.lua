@@ -13,6 +13,8 @@ local strict = require "strict"
 This program requires the Love2D framework. 
 (See the GitHub Wiki for more info.)
 
+! Remember to run Auto-Format before major checkins (or right after), so random diffs don't appear. 
+
 Let the DraImgList be Global. 
 --]] -------------------------------------------------
 
@@ -57,11 +59,27 @@ local function loadDragonImageList() -- store image regions, materials, & colors
         primary   = "images/simpleAgricosPrimary.png",
         secondary = "images/simpleAgricosSecondary.png",
         tertiary  = "images/simpleAgricosTertiary.png",
-        primaryMat = "images/simpleAgricosPrimaryGlass.png",
-        secondaryMat = "images/simpleAgricosSecondarySand.png",
-        tertiaryMat = "images/simpleAgricosTertiarySand.png"
     }
 
+
+    local primaryMat = ""
+    local primMatPick = math.random(2)
+    print ("primMatPick = ".. primMatPick)
+
+    if primMatPick == 1 then
+        primaryMat = "images/simpleAgricosPrimaryGlass.png"
+    else
+        primaryMat = "images/simpleAgricosPrimarySand.png"
+    end
+
+
+    local secondaryMat = "images/simpleAgricosSecondarySand.png"
+    local tertiaryMat = "images/simpleAgricosTertiarySand.png"
+
+
+
+
+--[[  Not in use atm
 
     local matfile = {
         primaryGlass = "images/simpleAgricosPrimaryGlass.png",
@@ -71,7 +89,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
         secondarySand = "images/simpleAgricosSecondarySand.png",
         tertiarySand = "images/simpleAgricosTertiarySand.png"
     }
-
+--]]
 
     drImage = love.graphics.newImage(imfile.outlines)
     --drImage = love.graphics.newImage("images/dragontestLines.png")
@@ -99,15 +117,21 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     --print("rColorT = ", unpack(rColorT))
     DraImgList.tertiary = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(imfile.primaryMat)
+
+
+
+--start material pick
+
+
+    drImage = love.graphics.newImage(primaryMat)
     rColorT = {1,1,1}
     DraImgList.primaryMat = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(imfile.secondaryMat)
+    drImage = love.graphics.newImage(secondaryMat)
     rColorT = {1,1,1}
     DraImgList.secondaryMat = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(imfile.tertiaryMat)
+    drImage = love.graphics.newImage(tertiaryMat)
     rColorT = {1,1,1}
     DraImgList.tertiaryMat = { image = drImage, color = rColorT }
 
