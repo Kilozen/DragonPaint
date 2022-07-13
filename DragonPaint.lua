@@ -60,10 +60,8 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     }
 
 
-    local primaryMat = ""
-    local primMatPick = math.random(2)
-    print("primMatPick = " .. primMatPick)
 
+    local primMatPick = math.random(2)
     if primMatPick == 1 then
         primaryMat = "images/simpleAgricosPrimaryGlass.png"
     else
@@ -71,9 +69,22 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     end
 
 
-    local secondaryMat = "images/simpleAgricosSecondarySand.png"
-    local tertiaryMat = "images/simpleAgricosTertiarySand.png"
+    local secMatPick = math.random(2)
+    if secMatPick == 1 then
+        secondaryMat = "images/simpleAgricosSecondaryGlass.png"
+    else
+        secondaryMat = "images/simpleAgricosSecondarySand.png"
+    end   
+    
 
+    local tertMatPick = math.random(2)
+    if tertMatPick == 1 then
+        tertiaryMat = "images/simpleAgricosTertiaryGlass.png"
+    else
+        tertiaryMat = "images/simpleAgricosTertiarySand.png"
+    end
+
+   
 
 
 
