@@ -19,8 +19,8 @@ Let the DraImgList be Global.
 --]] -------------------------------------------------
 
 
--- dragon image info 
-local DraImgList = {} -- a table of 4 body regions: {region image,  color} 
+-- dragon image info
+local DraImgList = {} -- a table of 4 body regions: {region image,  color}
 
 
 local function getRandomColor() -- returns a color as a Table
@@ -32,21 +32,19 @@ local function getRandomColor() -- returns a color as a Table
     local ab = 255
     print("rgb color = ", rb, gb, bb)
 
-    local colorT = { love.math.colorFromBytes(rb, gb, bb, ab) }  -- pack into a Table...
+    local colorT = { love.math.colorFromBytes(rb, gb, bb, ab) } -- pack into a Table...
     -- print("color = ", unpack(color))
     -- NOTE: Love2D/LuaJIT/Lua5.1 does not appear to have table.unpack()... it just has "unpack()"
 
     return colorT
 end
 
-
-
 local function loadDragonImageList() -- store image regions, materials, & colors
 
-    local drImage = nil  -- dragon Image var 
-    local rColorT = {}   -- table to hold 3 parts of an RGB color 
+    local drImage = nil -- dragon Image var
+    local rColorT = {} -- table to hold 3 parts of an RGB color
 
-    -- [] maybe make a "config file" of available images? 
+    -- [] maybe make a "config file" of available images?
     local imfile_old = {
         outlines  = "images/dragontestLines.png",
         primary   = "images/dragontestPrimary.png",
@@ -64,7 +62,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 
     local primaryMat = ""
     local primMatPick = math.random(2)
-    print ("primMatPick = ".. primMatPick)
+    print("primMatPick = " .. primMatPick)
 
     if primMatPick == 1 then
         primaryMat = "images/simpleAgricosPrimaryGlass.png"
@@ -79,7 +77,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 
 
 
---[[  Not in use atm
+    --[[  Not in use atm
 
     local matfile = {
         primaryGlass = "images/simpleAgricosPrimaryGlass.png",
@@ -96,7 +94,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
-    rColorT = {1,1,1}
+    rColorT = { 1, 1, 1 }
     DraImgList.outlines = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(imfile.primary)
@@ -120,19 +118,19 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 
 
 
---start material pick
+    --start material pick
 
 
     drImage = love.graphics.newImage(primaryMat)
-    rColorT = {1,1,1}
+    rColorT = { 1, 1, 1 }
     DraImgList.primaryMat = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(secondaryMat)
-    rColorT = {1,1,1}
+    rColorT = { 1, 1, 1 }
     DraImgList.secondaryMat = { image = drImage, color = rColorT }
 
     drImage = love.graphics.newImage(tertiaryMat)
-    rColorT = {1,1,1}
+    rColorT = { 1, 1, 1 }
     DraImgList.tertiaryMat = { image = drImage, color = rColorT }
 
 end
@@ -144,84 +142,79 @@ local function reColorDragonImageList()
     DraImgList.tertiary.color = getRandomColor()
 end
 
+function love.load() -- this is where Love2D does it's FIRST initialization.
 
-function love.load() -- this is where Love2D does it's FIRST initialization. 
-
-    love.window.setTitle(gameTitle.." "..dpVersion)
+    love.window.setTitle(gameTitle .. " " .. dpVersion)
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
-    love.graphics.setBackgroundColor(1,1,1)
-    love.graphics.setColor(0,0,0)
+    love.graphics.setBackgroundColor(1, 1, 1)
+    love.graphics.setColor(0, 0, 0)
 
     loadDragonImageList()
 
-    -- TEMPORARY -- 
+    -- TEMPORARY --
     print ""
-    print("window width/2 = ".. math.floor(love.graphics.getWidth()/2) )
-    print("window height/2 = ".. math.floor(love.graphics.getHeight()/2) )
+    print("window width/2 = " .. math.floor(love.graphics.getWidth() / 2))
+    print("window height/2 = " .. math.floor(love.graphics.getHeight() / 2))
 
     local img = DraImgList.outlines.image
-    print("0.5 image width/2 = ".. math.floor(img:getWidth()/2 *0.5) )
-    print("0.5 image height/2 = ".. math.floor(img:getHeight()/2 *0.5) )
+    print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
+    print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 end
 
-
-function love.update(dt) -- Love2D calls this 60 times per second. 
-    -- nothing needed here so far... 
+function love.update(dt) -- Love2D calls this 60 times per second.
+    -- nothing needed here so far...
 end
 
-function love.draw() -- Love2D calls this 60 times per second. 
+function love.draw() -- Love2D calls this 60 times per second.
 
-    -- how much the images need to be scaled 
+    -- how much the images need to be scaled
     local xscale = 0.5
     local yscale = 0.5
 
-    -- image placement, declare with default values, then recalculate below. 
+    -- image placement, declare with default values, then recalculate below.
     local xloc = 40
     local yloc = 30
 
-    -- how far is the image center from the window center? 
-    -- draw it that far to the right... 
+    -- how far is the image center from the window center?
+    -- draw it that far to the right...
     local img = DraImgList.outlines.image
 
-    -- x-offset needed is the Window center minus the Image center. 
-    xloc = (love.graphics.getWidth()/2)  - (math.floor(img:getWidth()/2 * xscale))
-    yloc = (love.graphics.getHeight()/2) - (math.floor(img:getHeight()/2 * yscale))
+    -- x-offset needed is the Window center minus the Image center.
+    xloc = (love.graphics.getWidth() / 2) - (math.floor(img:getWidth() / 2 * xscale))
+    yloc = (love.graphics.getHeight() / 2) - (math.floor(img:getHeight() / 2 * yscale))
     -- (the above could be calculated  once, then passed in)
 
 
 
 
     -- Draw the Dragon parts [IMPORTANT STEP]
-    love.graphics.setColor( unpack(DraImgList.outlines.color) )
+    love.graphics.setColor(unpack(DraImgList.outlines.color))
     love.graphics.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
 
-    love.graphics.setColor( unpack(DraImgList.primary.color) )
+    love.graphics.setColor(unpack(DraImgList.primary.color))
     love.graphics.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList.secondary.color) )
+    love.graphics.setColor(unpack(DraImgList.secondary.color))
     love.graphics.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList.tertiary.color) )
+    love.graphics.setColor(unpack(DraImgList.tertiary.color))
     love.graphics.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 
-    love.graphics.setColor( unpack(DraImgList.primaryMat.color) )
+    love.graphics.setColor(unpack(DraImgList.primaryMat.color))
     love.graphics.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList.secondaryMat.color) )
+    love.graphics.setColor(unpack(DraImgList.secondaryMat.color))
     love.graphics.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor( unpack(DraImgList.tertiaryMat.color) )
+    love.graphics.setColor(unpack(DraImgList.tertiaryMat.color))
     love.graphics.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
 
 end
-
-
-
 
 function love.keypressed(key)
 
@@ -235,4 +228,3 @@ function love.keypressed(key)
 end
 
 --print("\n\n"); error("dke ----- BEAKPOINT -----") -- *********** BREAKPOINT **********
-
