@@ -146,12 +146,45 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 
 end
 
+
+
 local function reColorDragonImageList()
     print ""
     DraImgList.primary.color = getRandomColor()
     DraImgList.secondary.color = getRandomColor()
     DraImgList.tertiary.color = getRandomColor()
+
+
+    local primMatPick = math.random(2)
+    if primMatPick == 1 then
+        drImage = love.graphics.newImage("images/simpleAgricosPrimaryGlass.png")
+    else
+        drImage = love.graphics.newImage("images/simpleAgricosPrimarySand.png")
+    end
+    DraImgList.primaryMat.image = drImage
+
+
+    local secMatPick = math.random(2)
+    if secMatPick == 1 then
+        drImage = love.graphics.newImage("images/simpleAgricosSecondaryGlass.png")
+    else
+        drImage = love.graphics.newImage("images/simpleAgricosSecondarySand.png")
+    end   
+    DraImgList.secondaryMat.image = drImage
+
+
+    local tertMatPick = math.random(2)
+    if tertMatPick == 1 then
+        drImage = love.graphics.newImage("images/simpleAgricosTertiaryGlass.png")
+    else
+        drImage = love.graphics.newImage("images/simpleAgricosTertiarySand.png")
+    end
+    DraImgList.tertiaryMat.image = drImage
+
 end
+
+
+
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
 
@@ -174,6 +207,9 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 end
+
+
+
 
 function love.update(dt) -- Love2D calls this 60 times per second.
     -- nothing needed here so far...
@@ -200,7 +236,6 @@ function love.draw() -- Love2D calls this 60 times per second.
 
 
 
-
     -- Draw the Dragon parts [IMPORTANT STEP]
     love.graphics.setColor(unpack(DraImgList.outlines.color))
     love.graphics.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
@@ -216,6 +251,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     love.graphics.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 
+    -- Materials (textures)
     love.graphics.setColor(unpack(DraImgList.primaryMat.color))
     love.graphics.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
 
@@ -226,6 +262,13 @@ function love.draw() -- Love2D calls this 60 times per second.
     love.graphics.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
 
 end
+
+
+
+
+
+
+
 
 function love.keypressed(key)
 
