@@ -1,7 +1,7 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.04 (Release 1)"
-local dpVdate = "7/10/22"
+local dpVersion = "0.05 (in progress)"
+local dpVdate = "7/13/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 --local strict = require "C:/Program Files/lua54/k_libraries/strict"
@@ -45,14 +45,14 @@ local function loadDragonImageList() -- store image regions & colors
     local rColorT = {}   -- table to hold 3 parts of an RGB color 
 
     -- [] maybe make a "config file" of available images? 
-    local imfile = {
+    local imfile_old = {
         outlines  = "images/dragontestLines.png",
         primary   = "images/dragontestPrimary.png",
         secondary = "images/dragontestSecondary.png",
         tertiary  = "images/dragontestTertiary.png"
     }
 
-    local imfile2 = {
+    local imfile = {
         outlines  = "images/simpleAgricosLines.png",
         primary   = "images/simpleAgricosPrimary.png",
         secondary = "images/simpleAgricosSecondary.png",
