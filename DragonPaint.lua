@@ -39,7 +39,7 @@ end
 
 
 
-local function loadDragonImageList() -- store image regions & colors
+local function loadDragonImageList() -- store image regions, materials, & colors
 
     local drImage = nil  -- dragon Image var 
     local rColorT = {}   -- table to hold 3 parts of an RGB color 
@@ -56,8 +56,22 @@ local function loadDragonImageList() -- store image regions & colors
         outlines  = "images/simpleAgricosLines.png",
         primary   = "images/simpleAgricosPrimary.png",
         secondary = "images/simpleAgricosSecondary.png",
-        tertiary  = "images/simpleAgricosTertiary.png"
+        tertiary  = "images/simpleAgricosTertiary.png",
+        primaryMat = "images/simpleAgricosPrimaryGlass.png",
+        secondaryMat = "images/simpleAgricosSecondarySand.png",
+        tertiaryMat = "images/simpleAgricosTertiarySand.png"
     }
+
+
+    local matfile = {
+        primaryGlass = "images/simpleAgricosPrimaryGlass.png",
+        secondaryGlass = "images/simpleAgricosSecondaryGlass.png",
+        tertiaryGlass = "images/simpleAgricosTertiaryGlass.png",
+        primarySand = "images/simpleAgricosPrimarySand.png",
+        secondarySand = "images/simpleAgricosSecondarySand.png",
+        tertiarySand = "images/simpleAgricosTertiarySand.png"
+    }
+
 
     drImage = love.graphics.newImage(imfile.outlines)
     --drImage = love.graphics.newImage("images/dragontestLines.png")
@@ -84,6 +98,18 @@ local function loadDragonImageList() -- store image regions & colors
     --print("rColorT =", rColorT)
     --print("rColorT = ", unpack(rColorT))
     DraImgList.tertiary = { image = drImage, color = rColorT }
+
+    drImage = love.graphics.newImage(imfile.primaryMat)
+    rColorT = {1,1,1}
+    DraImgList.primaryMat = { image = drImage, color = rColorT }
+
+    drImage = love.graphics.newImage(imfile.secondaryMat)
+    rColorT = {1,1,1}
+    DraImgList.secondaryMat = { image = drImage, color = rColorT }
+
+    drImage = love.graphics.newImage(imfile.tertiaryMat)
+    rColorT = {1,1,1}
+    DraImgList.tertiaryMat = { image = drImage, color = rColorT }
 
 end
 
@@ -142,9 +168,12 @@ function love.draw() -- Love2D calls this 60 times per second.
     -- (the above could be calculated  once, then passed in)
 
 
-    -- Draw the Dragon parts 
+
+
+    -- Draw the Dragon parts [IMPORTANT STEP]
     love.graphics.setColor( unpack(DraImgList.outlines.color) )
     love.graphics.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
+
 
     love.graphics.setColor( unpack(DraImgList.primary.color) )
     love.graphics.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
@@ -155,7 +184,19 @@ function love.draw() -- Love2D calls this 60 times per second.
     love.graphics.setColor( unpack(DraImgList.tertiary.color) )
     love.graphics.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
+
+    love.graphics.setColor( unpack(DraImgList.primaryMat.color) )
+    love.graphics.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
+
+    love.graphics.setColor( unpack(DraImgList.secondaryMat.color) )
+    love.graphics.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
+
+    love.graphics.setColor( unpack(DraImgList.tertiaryMat.color) )
+    love.graphics.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
+
 end
+
+
 
 
 function love.keypressed(key)
