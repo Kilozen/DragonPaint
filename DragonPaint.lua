@@ -8,6 +8,7 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 --print(strict.version)
 local strict = require "strict"
 
+local gameFont = love.graphics.newFont(20)
 
 --[[ Design Notes ------------------------------------
 This program requires the Love2D framework. 
@@ -74,8 +75,8 @@ local function loadDragonImageList() -- store image regions, materials, & colors
         secondaryMat = "images/simpleAgricosSecondaryGlass.png"
     else
         secondaryMat = "images/simpleAgricosSecondarySand.png"
-    end   
-    
+    end
+
 
     local tertMatPick = math.random(2)
     if tertMatPick == 1 then
@@ -84,7 +85,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
         tertiaryMat = "images/simpleAgricosTertiarySand.png"
     end
 
-   
+
 
 
 
@@ -146,8 +147,6 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 
 end
 
-
-
 local function reColorDragonImageList()
     print ""
     DraImgList.primary.color = getRandomColor()
@@ -169,7 +168,7 @@ local function reColorDragonImageList()
         drImage = love.graphics.newImage("images/simpleAgricosSecondaryGlass.png")
     else
         drImage = love.graphics.newImage("images/simpleAgricosSecondarySand.png")
-    end   
+    end
     DraImgList.secondaryMat.image = drImage
 
 
@@ -182,9 +181,6 @@ local function reColorDragonImageList()
     DraImgList.tertiaryMat.image = drImage
 
 end
-
-
-
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
 
@@ -207,9 +203,6 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 end
-
-
-
 
 function love.update(dt) -- Love2D calls this 60 times per second.
     -- nothing needed here so far...
@@ -261,14 +254,12 @@ function love.draw() -- Love2D calls this 60 times per second.
     love.graphics.setColor(unpack(DraImgList.tertiaryMat.color))
     love.graphics.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
 
+    love.graphics.setColor(0, .5, 1)
+    love.graphics.setFont(gameFont)
+    love.graphics.print("[Esc] to exit", 530, 10)
+    love.graphics.print("[Space] to change colors", 530, 40)
+
 end
-
-
-
-
-
-
-
 
 function love.keypressed(key)
 
