@@ -10,6 +10,7 @@ local strict = require "strict"
 
 local lg = love.graphics -- handy abbreviation
 
+local mobile = false  -- detect if running on an android phone 
 
 
 --[[ Design Notes ------------------------------------
@@ -208,9 +209,11 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
 
     love.window.setTitle(gameTitle .. " " .. dpVersion)
 
+    if love.system.getOS() == "Android" then mobile = true end
+
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
-    lg.setBackgroundColor(1, 1, 1)
+    lg.setBackgroundColor(.9, .9, .8)
     lg.setColor(0, 0, 0)
 
     loadDragonImageList()
@@ -234,8 +237,13 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     lg.setFont(lg.newFont(18))
     lg.setColor(0, .5, 1)
-    lg.print("[Space] to change colors", 20, 10)
-    lg.print("[Esc] to exit", 20, 35)
+
+    if mobile then
+        lg.print("Tap to change colors", 20, 35)
+    else
+        lg.print("[Space] to change colors", 20, 10)
+        lg.print("[Esc] to exit", 20, 35)
+    end
 
     -- image placement, declare with default values, then recalculate below.
     local xloc = 10
