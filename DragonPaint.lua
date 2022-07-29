@@ -10,7 +10,7 @@ local strict = require "strict"
 
 local lg = love.graphics -- handy abbreviation
 
-local mobile = false  -- detect if running on an android phone 
+local mobile = false -- detect if running on an android phone
 
 
 --[[ Design Notes ------------------------------------
@@ -203,18 +203,21 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 end
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
+    --create game window if not already in conf.lua
     --love.window.setMode(640, 360, {resizable=true, minwidth=400, minheight=300} )
-    --love.window.setMode(640*2, 360*2)
-    --love.window.setMode(640, 360)  -- create game window if not already in conf.lua
+
+    if love.system.getOS() == "Android" then
+        mobile = true
+    else
+        mobile = false
+        love.window.setMode(640 * 2, 360 * 2, { resizable = true })
+    end
 
     love.window.setTitle(gameTitle .. " " .. dpVersion)
-
-    if love.system.getOS() == "Android" then mobile = true end
-
-    math.randomseed(os.time()) -- (lua5.1 always returns nil)
-
     lg.setBackgroundColor(.9, .9, .8)
     lg.setColor(0, 0, 0)
+
+    math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
     loadDragonImageList()
 
