@@ -1,14 +1,15 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.05 (in progress)"
-local dpVdate = "7/13/22"
+local dpVersion = "0.06 (in progress)"
+local dpVdate = "7/28/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 --local strict = require "C:/Program Files/lua54/k_libraries/strict"
 --print(strict.version)
 local strict = require "strict"
 
-local gameFont = love.graphics.newFont(20)
+local lg = love.graphics -- handy abbreviation
+--local gameFont = 0 -- (declare as file-local, but can't set until window is created)
 
 --[[ Design Notes ------------------------------------
 This program requires the Love2D framework. 
@@ -17,6 +18,22 @@ This program requires the Love2D framework.
 ! Remember to run Auto-Format before major checkins (or right after), so random diffs don't appear. 
 
 Let the DraImgList be Global. 
+
+TODO: 
+- add click/touch for mobile devices 
+- scale the screen to fit mobile (it did show as landscape by default.. I'm not sure why)
+- scale the window so the *height* matches the narrow dimension 
+  (up to some max... keep it windowed on PCs) and scale the width proportionaly
+  center it on the screen (black bars on phone edges?)
+- add an 'exit' button? 
+
+- setup 'adb' for fast transfer of test files to the phone... 
+
+- have a lightly textured backgroud, always moving (clouds?)
+
+- make a "credits" page.. spash screen or exit screen saying who the devs/owners 
+are and what the "official" source site is.  (because games can be copied around 
+and leave no trace of their origin.. other than their name.)
 --]] -------------------------------------------------
 
 
@@ -183,11 +200,15 @@ local function reColorDragonImageList()
 end
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
+    --love.window.setMode(640, 360, {resizable=true, minwidth=400, minheight=300} )
+    --love.window.setMode(640*2, 360*2)
+    --love.window.setMode(640, 360)  -- create game window if not already in conf.lua
 
     love.window.setTitle(gameTitle .. " " .. dpVersion)
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
+    gameFont = lg.newFont(20)
     love.graphics.setBackgroundColor(1, 1, 1)
     love.graphics.setColor(0, 0, 0)
 
@@ -210,21 +231,26 @@ end
 
 function love.draw() -- Love2D calls this 60 times per second.
 
-    -- how much the images need to be scaled
-    local xscale = 0.5
-    local yscale = 0.5
-
     -- image placement, declare with default values, then recalculate below.
-    local xloc = 40
-    local yloc = 30
+    local xloc = 10
+    local yloc = 10
 
+    local ww = love.graphics.getWidth() -- window width
+    local wh = love.graphics.getHeight()
+    local iw = DraImgList.outlines.image:getWidth() -- image width
+    local ih = DraImgList.outlines.image:getHeight()
+
+    -- how much the images need to be scaled
+    local xscale = .3
+    local yscale = .3
+
+
+    -- Centering offset
+    -- x-offset needed is the Window center minus the Image center.
     -- how far is the image center from the window center?
     -- draw it that far to the right...
-    local img = DraImgList.outlines.image
-
-    -- x-offset needed is the Window center minus the Image center.
-    xloc = (love.graphics.getWidth() / 2) - (math.floor(img:getWidth() / 2 * xscale))
-    yloc = (love.graphics.getHeight() / 2) - (math.floor(img:getHeight() / 2 * yscale))
+    xloc = (ww / 2) - (math.floor(iw / 2 * xscale))
+    yloc = (wh / 2) - (math.floor(ih / 2 * yscale))
     -- (the above could be calculated  once, then passed in)
 
 
@@ -256,8 +282,8 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     love.graphics.setColor(0, .5, 1)
     love.graphics.setFont(gameFont)
-    love.graphics.print("[Esc] to exit", 530, 10)
-    love.graphics.print("[Space] to change colors", 530, 40)
+    love.graphics.print("[Esc] to exit", 350, 10)
+    love.graphics.print("[Space] to change colors", 350, 40)
 
 end
 
@@ -272,4 +298,9 @@ function love.keypressed(key)
     end
 end
 
+function love.touchpressed(id, x, y, dx, dy, pressure)
+    reColorDragonImageList()
+end
+
+--
 --print("\n\n"); error("dke ----- BEAKPOINT -----") -- *********** BREAKPOINT **********
