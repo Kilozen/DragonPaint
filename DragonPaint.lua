@@ -9,7 +9,8 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 local strict = require "strict"
 
 local lg = love.graphics -- handy abbreviation
---local gameFont = 0 -- (declare as file-local, but can't set until window is created)
+
+
 
 --[[ Design Notes ------------------------------------
 This program requires the Love2D framework. 
@@ -20,14 +21,14 @@ This program requires the Love2D framework.
 Let the DraImgList be Global. 
 
 TODO: 
-- add click/touch for mobile devices 
-- scale the screen to fit mobile (it did show as landscape by default.. I'm not sure why)
 - scale the window so the *height* matches the narrow dimension 
   (up to some max... keep it windowed on PCs) and scale the width proportionaly
   center it on the screen (black bars on phone edges?)
 - add an 'exit' button? 
 
 - setup 'adb' for fast transfer of test files to the phone... 
+
+- clean up how materials are done (make an extendable list) & cleanup globals 
 
 - have a lightly textured backgroud, always moving (clouds?)
 
@@ -55,6 +56,41 @@ local function getRandomColor() -- returns a color as a Table
     -- NOTE: Love2D/LuaJIT/Lua5.1 does not appear to have table.unpack()... it just has "unpack()"
 
     return colorT
+end
+
+local function colorDragonImageList()
+    print ""
+    DraImgList.primary.color = getRandomColor()
+    DraImgList.secondary.color = getRandomColor()
+    DraImgList.tertiary.color = getRandomColor()
+
+
+    local primMatPick = math.random(2)
+    if primMatPick == 1 then
+        drImage = lg.newImage("images/simpleAgricosPrimaryGlass.png")
+    else
+        drImage = lg.newImage("images/simpleAgricosPrimarySand.png")
+    end
+    DraImgList.primaryMat.image = drImage
+
+
+    local secMatPick = math.random(2)
+    if secMatPick == 1 then
+        drImage = lg.newImage("images/simpleAgricosSecondaryGlass.png")
+    else
+        drImage = lg.newImage("images/simpleAgricosSecondarySand.png")
+    end
+    DraImgList.secondaryMat.image = drImage
+
+
+    local tertMatPick = math.random(2)
+    if tertMatPick == 1 then
+        drImage = lg.newImage("images/simpleAgricosTertiaryGlass.png")
+    else
+        drImage = lg.newImage("images/simpleAgricosTertiarySand.png")
+    end
+    DraImgList.tertiaryMat.image = drImage
+
 end
 
 local function loadDragonImageList() -- store image regions, materials, & colors
@@ -118,24 +154,24 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     }
 --]]
 
-    drImage = love.graphics.newImage(imfile.outlines)
-    --drImage = love.graphics.newImage("images/dragontestLines.png")
+    drImage = lg.newImage(imfile.outlines)
+    --drImage = lg.newImage("images/dragontestLines.png")
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
     rColorT = { 1, 1, 1 }
     DraImgList.outlines = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(imfile.primary)
+    drImage = lg.newImage(imfile.primary)
     rColorT = getRandomColor()
     DraImgList.primary = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(imfile.secondary)
+    drImage = lg.newImage(imfile.secondary)
     rColorT = getRandomColor()
     DraImgList.secondary = { image = drImage, color = rColorT }
 
 
-    drImage = love.graphics.newImage(imfile.tertiary)
+    drImage = lg.newImage(imfile.tertiary)
     --local width = drImage:getWidth()
     --local height = drImage:getHeight()
     --print("width, height: ", width, height)
@@ -144,58 +180,24 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     --print("rColorT = ", unpack(rColorT))
     DraImgList.tertiary = { image = drImage, color = rColorT }
 
+    --colorDragonImageList()
 
 
 
     --start material pick
 
 
-    drImage = love.graphics.newImage(primaryMat)
+    drImage = lg.newImage(primaryMat)
     rColorT = { 1, 1, 1 }
     DraImgList.primaryMat = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(secondaryMat)
+    drImage = lg.newImage(secondaryMat)
     rColorT = { 1, 1, 1 }
     DraImgList.secondaryMat = { image = drImage, color = rColorT }
 
-    drImage = love.graphics.newImage(tertiaryMat)
+    drImage = lg.newImage(tertiaryMat)
     rColorT = { 1, 1, 1 }
     DraImgList.tertiaryMat = { image = drImage, color = rColorT }
-
-end
-
-local function reColorDragonImageList()
-    print ""
-    DraImgList.primary.color = getRandomColor()
-    DraImgList.secondary.color = getRandomColor()
-    DraImgList.tertiary.color = getRandomColor()
-
-
-    local primMatPick = math.random(2)
-    if primMatPick == 1 then
-        drImage = love.graphics.newImage("images/simpleAgricosPrimaryGlass.png")
-    else
-        drImage = love.graphics.newImage("images/simpleAgricosPrimarySand.png")
-    end
-    DraImgList.primaryMat.image = drImage
-
-
-    local secMatPick = math.random(2)
-    if secMatPick == 1 then
-        drImage = love.graphics.newImage("images/simpleAgricosSecondaryGlass.png")
-    else
-        drImage = love.graphics.newImage("images/simpleAgricosSecondarySand.png")
-    end
-    DraImgList.secondaryMat.image = drImage
-
-
-    local tertMatPick = math.random(2)
-    if tertMatPick == 1 then
-        drImage = love.graphics.newImage("images/simpleAgricosTertiaryGlass.png")
-    else
-        drImage = love.graphics.newImage("images/simpleAgricosTertiarySand.png")
-    end
-    DraImgList.tertiaryMat.image = drImage
 
 end
 
@@ -208,16 +210,15 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
-    gameFont = lg.newFont(20)
-    love.graphics.setBackgroundColor(1, 1, 1)
-    love.graphics.setColor(0, 0, 0)
+    lg.setBackgroundColor(1, 1, 1)
+    lg.setColor(0, 0, 0)
 
     loadDragonImageList()
 
     -- TEMPORARY --
     print ""
-    print("window width/2 = " .. math.floor(love.graphics.getWidth() / 2))
-    print("window height/2 = " .. math.floor(love.graphics.getHeight() / 2))
+    print("window width/2 = " .. math.floor(lg.getWidth() / 2))
+    print("window height/2 = " .. math.floor(lg.getHeight() / 2))
 
     local img = DraImgList.outlines.image
     print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
@@ -231,19 +232,25 @@ end
 
 function love.draw() -- Love2D calls this 60 times per second.
 
+    lg.setFont(lg.newFont(18))
+    lg.setColor(0, .5, 1)
+    lg.print("[Space] to change colors", 20, 10)
+    lg.print("[Esc] to exit", 20, 35)
+
     -- image placement, declare with default values, then recalculate below.
     local xloc = 10
     local yloc = 10
 
-    local ww = love.graphics.getWidth() -- window width
-    local wh = love.graphics.getHeight()
+    local ww = lg.getWidth() -- window width
+    local wh = lg.getHeight()
     local iw = DraImgList.outlines.image:getWidth() -- image width
     local ih = DraImgList.outlines.image:getHeight()
 
-    -- how much the images need to be scaled
-    local xscale = .3
-    local yscale = .3
+    local wiRatio = wh / ih -- window to image ratio (scaling by 'height', the smaller dimension)
 
+    -- how much the images need to be scaled
+    local xscale = wiRatio
+    local yscale = wiRatio -- just scale dimensions evenly.. no stretching
 
     -- Centering offset
     -- x-offset needed is the Window center minus the Image center.
@@ -256,41 +263,35 @@ function love.draw() -- Love2D calls this 60 times per second.
 
 
     -- Draw the Dragon parts [IMPORTANT STEP]
-    love.graphics.setColor(unpack(DraImgList.outlines.color))
-    love.graphics.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.outlines.color))
+    lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
 
-    love.graphics.setColor(unpack(DraImgList.primary.color))
-    love.graphics.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.primary.color))
+    lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor(unpack(DraImgList.secondary.color))
-    love.graphics.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.secondary.color))
+    lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor(unpack(DraImgList.tertiary.color))
-    love.graphics.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.tertiary.color))
+    lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 
     -- Materials (textures)
-    love.graphics.setColor(unpack(DraImgList.primaryMat.color))
-    love.graphics.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.primaryMat.color))
+    lg.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor(unpack(DraImgList.secondaryMat.color))
-    love.graphics.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
+    lg.setColor(unpack(DraImgList.secondaryMat.color))
+    lg.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
 
-    love.graphics.setColor(unpack(DraImgList.tertiaryMat.color))
-    love.graphics.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
-
-    love.graphics.setColor(0, .5, 1)
-    love.graphics.setFont(gameFont)
-    love.graphics.print("[Esc] to exit", 350, 10)
-    love.graphics.print("[Space] to change colors", 350, 40)
-
+    lg.setColor(unpack(DraImgList.tertiaryMat.color))
+    lg.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
 end
 
 function love.keypressed(key)
 
     if key == "space" then
-        reColorDragonImageList()
+        colorDragonImageList()
     end
 
     if key == "escape" then
@@ -299,7 +300,7 @@ function love.keypressed(key)
 end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
-    reColorDragonImageList()
+    colorDragonImageList()
 end
 
 --
