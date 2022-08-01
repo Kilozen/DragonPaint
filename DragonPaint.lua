@@ -12,6 +12,12 @@ local lg = love.graphics -- handy abbreviation
 
 local mobile = false -- detect if running on an android phone
 
+-- get timestamp of last save of thisFile (to use as a "minor version number")
+local fileInfo = love.filesystem.getInfo(thisFile)
+local verMinutes = math.floor((fileInfo.modtime-1659000000)/60)
+print(thisFile.." minutes since first version "..verMinutes )
+--(this is approximately the minutes since the first mobile version)
+
 
 --[[ Design Notes ------------------------------------
 This program requires the Love2D framework. 
@@ -22,12 +28,25 @@ This program requires the Love2D framework.
 Let the DraImgList be Global. 
 
 TODO: 
+
+organize material types as: 
+1, mat1
+2, mat2
+etc. so they can be randomized, 
+then within each one: 
+mat1.primary = file 
+mat1.secondary = file 
+etc... 
+like: sand.primary = file 
+
+
+[x] print a build timestamp or something randomly different each "build" to help show that a crossload did indeed get updated.
+  (how can code read the timestamp of it's own save time?) 
+
 - scale the window so the *height* matches the narrow dimension 
   (up to some max... keep it windowed on PCs) and scale the width proportionaly
   center it on the screen (black bars on phone edges?)
 - add an 'exit' button? 
-
-- setup 'adb' for fast transfer of test files to the phone... 
 
 - clean up how materials are done (make an extendable list) & cleanup globals 
 
@@ -214,7 +233,8 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     end
 
     love.window.setTitle(gameTitle .. " " .. dpVersion)
-    lg.setBackgroundColor(.9, .9, .8)
+    --lg.setBackgroundColor(.7, .8, .9)  -- pale blue
+    lg.setBackgroundColor(.9, .9, .8) -- pale tan 
     lg.setColor(0, 0, 0)
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
@@ -243,9 +263,11 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     if mobile then
         lg.print("Tap to change colors", 20, 35)
+        lg.print(verMinutes.." minutes", 20, 60)
     else
         lg.print("[Space] to change colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
+        lg.print(verMinutes.." minutes", 20, 60)
     end
 
     -- image placement, declare with default values, then recalculate below.
