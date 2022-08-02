@@ -1,7 +1,7 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.06 (in progress)"
-local dpVdate = "7/28/22"
+local dpVersion = "0.07"
+local dpVdate = "8/1/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 local strict = require "strict"
@@ -27,28 +27,7 @@ This program requires the Love2D framework.
 Let the DraImgList be Global. 
 
 TODO: 
-
-organize material types as: 
-1, mat1
-2, mat2
-etc. so they can be randomized, 
-then within each one: 
-mat1.primary = file 
-mat1.secondary = file 
-etc... 
-like: sand.primary = file 
-
-
-[x] print a build timestamp or something randomly different each "build" to help show that a crossload did indeed get updated.
-  (how can code read the timestamp of it's own save time?) 
-
-- scale the window so the *height* matches the narrow dimension 
-  (up to some max... keep it windowed on PCs) and scale the width proportionaly
-  center it on the screen (black bars on phone edges?)
 - add an 'exit' button? 
-
-- clean up how materials are done (make an extendable list) & cleanup globals 
-
 - have a lightly textured backgroud, always moving (clouds?)
 
 - make a "credits" page.. spash screen or exit screen saying who the devs/owners 
@@ -88,35 +67,43 @@ end
 
 
 local function materialDragonImageList()
-    print ""
 
-    local primMatPick = math.random(2)
-    if primMatPick == 1 then
-        drImage = lg.newImage("images/simpleAgricosPrimaryGlass.png")
-    else
-        drImage = lg.newImage("images/simpleAgricosPrimarySand.png")
-    end
-    DraImgList.primaryMat.image = drImage
+    -- having an indexed table makes random picking easier than elseifs
+    local materials = { 'none', 'glass', 'sand' }
+
+    local matfile = {}
+    matfile.none = {}
+    matfile.glass = {}
+    matfile.sand = {}
+
+    -- list of filenames makes it easy to add new material files
+    matfile['none'].primary = "images/transparentPixel.png"
+    matfile['none'].secondary = "images/transparentPixel.png"
+    matfile['none'].tertiary = "images/transparentPixel.png"
+
+    matfile['glass'].primary = "images/simpleAgricosPrimaryGlass.png"
+    matfile['glass'].secondary = "images/simpleAgricosSecondaryGlass.png"
+    matfile['glass'].tertiary = "images/simpleAgricosTertiaryGlass.png"
+
+    matfile['sand'].primary = "images/simpleAgricosPrimarySand.png"
+    matfile['sand'].secondary = "images/simpleAgricosSecondarySand.png"
+    matfile['sand'].tertiary = "images/simpleAgricosTertiarySand.png"
 
 
-    local secMatPick = math.random(2)
-    if secMatPick == 1 then
-        drImage = lg.newImage("images/simpleAgricosSecondaryGlass.png")
-    else
-        drImage = lg.newImage("images/simpleAgricosSecondarySand.png")
-    end
-    DraImgList.secondaryMat.image = drImage
+    -- pick materials with random()
+    local matPick = materials[math.random(#materials)]
+    --print(matPick)
+    --print(matfile[matPick].primary)
+    DraImgList.primary.matImage = lg.newImage(matfile[matPick].primary)
 
+    matPick = materials[math.random(#materials)]
+    --print(matfile[matPick].secondary)
+    DraImgList.secondary.matImage = lg.newImage(matfile[matPick].secondary)
 
-    local tertMatPick = math.random(2)
-    if tertMatPick == 1 then
-        drImage = lg.newImage("images/simpleAgricosTertiaryGlass.png")
-    else
-        drImage = lg.newImage("images/simpleAgricosTertiarySand.png")
-    end
-    DraImgList.tertiaryMat.image = drImage
+    matPick = materials[math.random(#materials)]
+    --print(matfile[matPick].tertiary)
+    DraImgList.tertiary.matImage = lg.newImage(matfile[matPick].tertiary)
 end
-
 
 
 local function loadDragonImageList() -- store image regions, materials, & colors
@@ -139,44 +126,6 @@ local function loadDragonImageList() -- store image regions, materials, & colors
         tertiary  = "images/simpleAgricosTertiary.png",
     }
 
-
-
-    local primMatPick = math.random(2)
-    if primMatPick == 1 then
-        primaryMat = "images/simpleAgricosPrimaryGlass.png"
-    else
-        primaryMat = "images/simpleAgricosPrimarySand.png"
-    end
-
-
-    local secMatPick = math.random(2)
-    if secMatPick == 1 then
-        secondaryMat = "images/simpleAgricosSecondaryGlass.png"
-    else
-        secondaryMat = "images/simpleAgricosSecondarySand.png"
-    end
-
-
-    local tertMatPick = math.random(2)
-    if tertMatPick == 1 then
-        tertiaryMat = "images/simpleAgricosTertiaryGlass.png"
-    else
-        tertiaryMat = "images/simpleAgricosTertiarySand.png"
-    end
-
-
---[[  Not in use atm
-
-    local matfile = {
-        primaryGlass = "images/simpleAgricosPrimaryGlass.png",
-        secondaryGlass = "images/simpleAgricosSecondaryGlass.png",
-        tertiaryGlass = "images/simpleAgricosTertiaryGlass.png",
-        primarySand = "images/simpleAgricosPrimarySand.png",
-        secondarySand = "images/simpleAgricosSecondarySand.png",
-        tertiarySand = "images/simpleAgricosTertiarySand.png"
-    }
---]]
-
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
@@ -187,23 +136,9 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
 
     colorDragonImageList()
-
-
-    
-    --start material pick
-    rColorT = { 1, 1, 1 }
-
-    drImage = lg.newImage(primaryMat)
-    DraImgList.primaryMat = { image = drImage, color = rColorT }
-
-    drImage = lg.newImage(secondaryMat)
-    DraImgList.secondaryMat = { image = drImage, color = rColorT }
-
-    drImage = lg.newImage(tertiaryMat)
-    DraImgList.tertiaryMat = { image = drImage, color = rColorT }
-
     materialDragonImageList()
 end
+
 
 
 
@@ -219,7 +154,7 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
         -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here) 
     end
 
-    love.window.setTitle(gameTitle .. " " .. dpVersion)
+    love.window.setTitle(gameTitle .. "  v" .. dpVersion .. "-".. verMinutes)
     --lg.setBackgroundColor(.7, .8, .9)  -- pale blue
     lg.setBackgroundColor(.9, .9, .8) -- pale tan 
     lg.setColor(0, 0, 0)
@@ -239,6 +174,7 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print ""
 end
 
+
 function love.update(dt) -- Love2D calls this 60 times per second.
     -- nothing needed here so far...
 end
@@ -256,7 +192,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     else
         lg.print("[Space] to change colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
-        lg.print(verMinutes .. " minutes", 20, 60)
+        -- lg.print(verMinutes .. " minutes", 20, 60)
     end
 
     -- image placement, declare with default values, then recalculate below.
@@ -283,7 +219,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     -- (the above could be calculated  once, then passed in)
 
 
-    -- Draw the Dragon parts [IMPORTANT STEP]
+    -- Draw the Dragon parts (in colors) 
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
@@ -297,17 +233,17 @@ function love.draw() -- Love2D calls this 60 times per second.
     lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 
-    -- Materials (textures)
+    -- draw the Material types (textures)
     --lg.setColor(0, 0, 0) -- (if you wanted "all black" textures)
-    local matAlpha = 0.6 -- a value of 0.6 or so let's the underneath show through. 
+    local matAlpha = 0.6 -- a value of 0.6 or so lets the underneath show through. 
     lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors. 
-    lg.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
-    lg.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
-    lg.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
+    lg.draw(DraImgList.primary.matImage, xloc, yloc, 0, xscale, yscale)
+    lg.draw(DraImgList.secondary.matImage, xloc, yloc, 0, xscale, yscale)
+    lg.draw(DraImgList.tertiary.matImage, xloc, yloc, 0, xscale, yscale)
 end
 
-function love.keypressed(key)
 
+function love.keypressed(key)
     if key == "space" then
         colorDragonImageList()
         materialDragonImageList()
