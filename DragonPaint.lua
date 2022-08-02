@@ -4,9 +4,8 @@ local dpVersion = "0.06 (in progress)"
 local dpVdate = "7/28/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
---local strict = require "C:/Program Files/lua54/k_libraries/strict"
---print(strict.version)
 local strict = require "strict"
+--print(strict.version)
 
 local lg = love.graphics -- handy abbreviation
 
@@ -14,8 +13,8 @@ local mobile = false -- detect if running on an android phone
 
 -- get timestamp of last save of thisFile (to use as a "minor version number")
 local fileInfo = love.filesystem.getInfo(thisFile)
-local verMinutes = math.floor((fileInfo.modtime-1659000000)/60)
-print(thisFile.." minutes since first version "..verMinutes )
+local verMinutes = math.floor((fileInfo.modtime - 1659000000) / 60)
+print(thisFile .. " minutes since first version " .. verMinutes)
 --(this is approximately the minutes since the first mobile version)
 
 
@@ -78,12 +77,18 @@ local function getRandomColor() -- returns a color as a Table
     return colorT
 end
 
+
+
 local function colorDragonImageList()
     print ""
     DraImgList.primary.color = getRandomColor()
     DraImgList.secondary.color = getRandomColor()
     DraImgList.tertiary.color = getRandomColor()
+end
 
+
+local function materialDragonImageList()
+    print ""
 
     local primMatPick = math.random(2)
     if primMatPick == 1 then
@@ -110,8 +115,9 @@ local function colorDragonImageList()
         drImage = lg.newImage("images/simpleAgricosTertiarySand.png")
     end
     DraImgList.tertiaryMat.image = drImage
-
 end
+
+
 
 local function loadDragonImageList() -- store image regions, materials, & colors
 
@@ -159,10 +165,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     end
 
 
-
-
-
-    --[[  Not in use atm
+--[[  Not in use atm
 
     local matfile = {
         primaryGlass = "images/simpleAgricosPrimaryGlass.png",
@@ -174,52 +177,35 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     }
 --]]
 
-    drImage = lg.newImage(imfile.outlines)
-    --drImage = lg.newImage("images/dragontestLines.png")
     -- color won't matter for the Outline, because it's black, but
     -- just in case anything in the outline image is filled white (e.g. eyes)
     -- the color for the "outline" image should be set to white.
     rColorT = { 1, 1, 1 }
-    DraImgList.outlines = { image = drImage, color = rColorT }
+    DraImgList.outlines = { image = lg.newImage(imfile.outlines), color = rColorT } -- kmk: move this color set to where the others are
+    DraImgList.primary = { image = lg.newImage(imfile.primary) } -- (have to use ~constructor syntax for first assignment) 
+    DraImgList.secondary = { image = lg.newImage(imfile.secondary) }
+    DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
 
-    drImage = lg.newImage(imfile.primary)
-    rColorT = getRandomColor()
-    DraImgList.primary = { image = drImage, color = rColorT }
-
-    drImage = lg.newImage(imfile.secondary)
-    rColorT = getRandomColor()
-    DraImgList.secondary = { image = drImage, color = rColorT }
+    colorDragonImageList()
 
 
-    drImage = lg.newImage(imfile.tertiary)
-    --local width = drImage:getWidth()
-    --local height = drImage:getHeight()
-    --print("width, height: ", width, height)
-    rColorT = getRandomColor()
-    --print("rColorT =", rColorT)
-    --print("rColorT = ", unpack(rColorT))
-    DraImgList.tertiary = { image = drImage, color = rColorT }
-
-    --colorDragonImageList()
-
-
-
+    
     --start material pick
-
+    rColorT = { 1, 1, 1 }
 
     drImage = lg.newImage(primaryMat)
-    rColorT = { 1, 1, 1 }
     DraImgList.primaryMat = { image = drImage, color = rColorT }
 
     drImage = lg.newImage(secondaryMat)
-    rColorT = { 1, 1, 1 }
     DraImgList.secondaryMat = { image = drImage, color = rColorT }
 
     drImage = lg.newImage(tertiaryMat)
-    rColorT = { 1, 1, 1 }
     DraImgList.tertiaryMat = { image = drImage, color = rColorT }
 
+    materialDragonImageList()
 end
+
+
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
     --create game window if not already in conf.lua
@@ -230,6 +216,7 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     else
         mobile = false
         love.window.setMode(640 * 2, 360 * 2, { resizable = true })
+        -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here) 
     end
 
     love.window.setTitle(gameTitle .. " " .. dpVersion)
@@ -256,6 +243,8 @@ function love.update(dt) -- Love2D calls this 60 times per second.
     -- nothing needed here so far...
 end
 
+
+
 function love.draw() -- Love2D calls this 60 times per second.
 
     lg.setFont(lg.newFont(18))
@@ -263,11 +252,11 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     if mobile then
         lg.print("Tap to change colors", 20, 35)
-        lg.print(verMinutes.." minutes", 20, 60)
+        lg.print(verMinutes .. " minutes", 20, 60)
     else
         lg.print("[Space] to change colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
-        lg.print(verMinutes.." minutes", 20, 60)
+        lg.print(verMinutes .. " minutes", 20, 60)
     end
 
     -- image placement, declare with default values, then recalculate below.
@@ -294,11 +283,9 @@ function love.draw() -- Love2D calls this 60 times per second.
     -- (the above could be calculated  once, then passed in)
 
 
-
     -- Draw the Dragon parts [IMPORTANT STEP]
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
-
 
     lg.setColor(unpack(DraImgList.primary.color))
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
@@ -311,13 +298,11 @@ function love.draw() -- Love2D calls this 60 times per second.
 
 
     -- Materials (textures)
-    lg.setColor(unpack(DraImgList.primaryMat.color))
+    --lg.setColor(0, 0, 0) -- (if you wanted "all black" textures)
+    local matAlpha = 0.6 -- a value of 0.6 or so let's the underneath show through. 
+    lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors. 
     lg.draw(DraImgList.primaryMat.image, xloc, yloc, 0, xscale, yscale)
-
-    lg.setColor(unpack(DraImgList.secondaryMat.color))
     lg.draw(DraImgList.secondaryMat.image, xloc, yloc, 0, xscale, yscale)
-
-    lg.setColor(unpack(DraImgList.tertiaryMat.color))
     lg.draw(DraImgList.tertiaryMat.image, xloc, yloc, 0, xscale, yscale)
 end
 
@@ -325,6 +310,7 @@ function love.keypressed(key)
 
     if key == "space" then
         colorDragonImageList()
+        materialDragonImageList()
     end
 
     if key == "escape" then
@@ -334,6 +320,7 @@ end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
     colorDragonImageList()
+    materialDragonImageList()
 end
 
 --
