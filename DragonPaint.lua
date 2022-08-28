@@ -4,7 +4,7 @@ local dpVersion = "0.07"
 local dpVdate = "8/1/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
-local strict = require "strict"
+local strict = require "lib.strict"
 --print(strict.version)
 
 local lg = love.graphics -- handy abbreviation
@@ -27,6 +27,7 @@ This program requires the Love2D framework.
 Let the DraImgList be Global. 
 
 TODO: 
+- change 'none' to '[smooth] plastic'
 - add an 'exit' button? 
 - have a lightly textured backgroud, always moving (clouds?)
 
@@ -55,7 +56,6 @@ local function getRandomColor() -- returns a color as a Table
 
     return colorT
 end
-
 
 
 local function colorDragonImageList()
@@ -131,15 +131,13 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     -- the color for the "outline" image should be set to white.
     rColorT = { 1, 1, 1 }
     DraImgList.outlines = { image = lg.newImage(imfile.outlines), color = rColorT } -- kmk: move this color set to where the others are
-    DraImgList.primary = { image = lg.newImage(imfile.primary) } -- (have to use ~constructor syntax for first assignment) 
+    DraImgList.primary = { image = lg.newImage(imfile.primary) } -- (have to use ~constructor syntax for first assignment)
     DraImgList.secondary = { image = lg.newImage(imfile.secondary) }
     DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
 
     colorDragonImageList()
     materialDragonImageList()
 end
-
-
 
 
 function love.load() -- this is where Love2D does it's FIRST initialization.
@@ -151,12 +149,12 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     else
         mobile = false
         love.window.setMode(640 * 2, 360 * 2, { resizable = true })
-        -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here) 
+        -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here)
     end
 
-    love.window.setTitle(gameTitle .. "  v" .. dpVersion .. "-".. verMinutes)
+    love.window.setTitle(gameTitle .. "  v" .. dpVersion .. "-" .. verMinutes)
     --lg.setBackgroundColor(.7, .8, .9)  -- pale blue
-    lg.setBackgroundColor(.9, .9, .8) -- pale tan 
+    lg.setBackgroundColor(.9, .9, .8) -- pale tan
     lg.setColor(0, 0, 0)
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
@@ -178,7 +176,6 @@ end
 function love.update(dt) -- Love2D calls this 60 times per second.
     -- nothing needed here so far...
 end
-
 
 
 function love.draw() -- Love2D calls this 60 times per second.
@@ -219,7 +216,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     -- (the above could be calculated  once, then passed in)
 
 
-    -- Draw the Dragon parts (in colors) 
+    -- Draw the Dragon parts (in colors)
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
@@ -235,8 +232,8 @@ function love.draw() -- Love2D calls this 60 times per second.
 
     -- draw the Material types (textures)
     --lg.setColor(0, 0, 0) -- (if you wanted "all black" textures)
-    local matAlpha = 0.6 -- a value of 0.6 or so lets the underneath show through. 
-    lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors. 
+    local matAlpha = 0.6 -- a value of 0.6 or so lets the underneath show through.
+    lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors.
     lg.draw(DraImgList.primary.matImage, xloc, yloc, 0, xscale, yscale)
     lg.draw(DraImgList.secondary.matImage, xloc, yloc, 0, xscale, yscale)
     lg.draw(DraImgList.tertiary.matImage, xloc, yloc, 0, xscale, yscale)
@@ -254,10 +251,21 @@ function love.keypressed(key)
     end
 end
 
+
+-- kmk instead, should this just use mousetouched(istouch) mousereleased(istouch)?
 function love.touchpressed(id, x, y, dx, dy, pressure)
     colorDragonImageList()
     materialDragonImageList()
 end
+
+
+function love.mousereleased(x, y, button, istouch, presses)
+    print("mouse at " .. x, y)
+
+    colorDragonImageList()
+    materialDragonImageList()
+end
+
 
 --
 --print("\n\n"); error("dke ----- BEAKPOINT -----") -- *********** BREAKPOINT **********
