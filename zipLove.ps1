@@ -1,11 +1,8 @@
-# Script (powershell) to package DragonPaint files: 
+# Script (powershell) to package DragonPaint files as a .love file 
 
 write-host "`n"
-# how Test output ('WhatIf')
-#Compress-Archive -WhatIf -LiteralPath .\main.lua, .\DragonPaint.lua, .\conf.lua, .\strict.lua, .\images -CompressionLevel Optimal -DestinationPath .\DragonPaint.zip 
-
 # .zip all necessary project files together: 
-#Compress-Archive -LiteralPath .\main.lua, .\DragonPaint.lua, .\conf.lua, .\strict.lua, .\images -CompressionLevel Optimal -DestinationPath .\DragonPaint.zip 
+# Compress-Archive -LiteralPath .\main.lua, .\DragonPaint.lua, .\conf.lua, .\strict.lua, .\images -CompressionLevel Optimal -DestinationPath .\DragonPaint.zip 
 
 # multi-line style (more readable)
 $compress = @{
@@ -13,7 +10,7 @@ $compress = @{
     CompressionLevel = "Optimal"
     DestinationPath  = ".\DragonPaint.zip"
 }
-Compress-Archive -WhatIf @compress 
+Compress-Archive -WhatIf @compress  # show Test output ('WhatIf')
 Compress-Archive @compress 
 
 
