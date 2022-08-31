@@ -1,8 +1,8 @@
 -- conf.lua -- Love2d Configuration File
 
 function love.conf(t)
-	--t.console = true
-	--t.version = "11.4"  -- This creates a warning when run wtih other versions.
+	t.console = true
+	--t.version = "11.4"  -- This creates a warning when run with other versions.
 
 	t.window.title = "DragonPaint"
 	t.window.icon = "images/DragonPaint_icon.png"
