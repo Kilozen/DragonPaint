@@ -7,6 +7,11 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 local strict = require "lib.strict"
 --print(strict.version)
 
+-- Prepare ColorListSelector (CLS)
+require "lib.ColorListSelector.ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
+local CLS = require "lib.ColorListSelector.ColorListSelector" -- Then get a handle to the API functions for CLS.
+
+
 local lg = love.graphics -- handy abbreviation
 
 local mobile = false -- detect if running on an android phone
@@ -170,28 +175,17 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
+
+    CLS.load() -- let ColorListSelector do its initialization
 end
 
 
 function love.update(dt) -- Love2D calls this 60 times per second.
-    -- nothing needed here so far...
+    CLS.update(dt)
 end
 
 
-function love.draw() -- Love2D calls this 60 times per second.
-
-    lg.setFont(lg.newFont(18))
-    lg.setColor(0, .5, 1)
-
-    if mobile then
-        lg.print("Tap to change colors", 20, 35)
-        lg.print(verMinutes .. " minutes", 20, 60)
-    else
-        lg.print("[Space] to change colors", 20, 10)
-        lg.print("[Esc] to exit", 20, 35)
-        -- lg.print(verMinutes .. " minutes", 20, 60)
-    end
-
+local function drawDragon()
     -- image placement, declare with default values, then recalculate below.
     local xloc = 10
     local yloc = 10
@@ -220,10 +214,14 @@ function love.draw() -- Love2D calls this 60 times per second.
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
+    -- kmkmk FIX this to store/set colors consistently 
     lg.setColor(unpack(DraImgList.primary.color))
+    love.graphics.setColor(CLS.buttonList[1].color)
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
+    -- kmk FIX: 
     lg.setColor(unpack(DraImgList.secondary.color))
+    love.graphics.setColor(CLS.buttonList[2].color)
     lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
     lg.setColor(unpack(DraImgList.tertiary.color))
@@ -240,6 +238,36 @@ function love.draw() -- Love2D calls this 60 times per second.
 end
 
 
+local function drawUI()
+    -- UI Color Selector Buttons...
+    love.graphics.setColor(CLS.buttonList[2].color)
+    love.graphics.circle("fill", 200, 70, 40)
+
+    love.graphics.setColor(CLS.buttonList[1].color)
+    love.graphics.circle("fill", 240, 50, 20)
+
+    CLS.draw()
+end
+
+
+function love.draw() -- Love2D calls this 60 times per second.
+    lg.setFont(lg.newFont(18))
+    lg.setColor(0, .5, 1)
+
+    if mobile then
+        lg.print("Tap to change colors", 20, 35)
+        lg.print(verMinutes .. " minutes", 20, 60)
+    else
+        lg.print("[Space] to change colors", 20, 10)
+        lg.print("[Esc] to exit", 20, 35)
+        -- lg.print(verMinutes .. " minutes", 20, 60)
+    end
+
+    drawDragon()
+    drawUI()
+end
+
+
 function love.keypressed(key)
     if key == "space" then
         colorDragonImageList()
@@ -249,13 +277,29 @@ function love.keypressed(key)
     if key == "escape" then
         love.event.quit()
     end
+
+    CLS.keypressed(key)
 end
 
 
--- kmk instead, should this just use mousetouched(istouch) mousereleased(istouch)?
+function love.wheelmoved(x, y)
+    -- (user code here if desired)
+
+    CLS.wheelmoved(x, y)
+end
+
+
 function love.touchpressed(id, x, y, dx, dy, pressure)
+    -- kmk instead, wouldn't it be better to just use mousepressed(istouch) mousereleased(istouch)?
     colorDragonImageList()
     materialDragonImageList()
+end
+
+
+function love.mousepressed(x, y, button, istouch, presses)
+    -- (user code here if desired)
+
+    CLS.mousepressed(x, y)
 end
 
 
@@ -264,6 +308,8 @@ function love.mousereleased(x, y, button, istouch, presses)
 
     colorDragonImageList()
     materialDragonImageList()
+
+    CLS.mousereleased(x, y)
 end
 
 
