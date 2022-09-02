@@ -1,0 +1,3 @@
+[submodule "lib/ColorListSelector"]
+	path = lib/ColorListSelector
+	url = https://github.com/Kilozen/ColorListSelector.git
