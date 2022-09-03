@@ -9,7 +9,9 @@ local strict = require "lib.strict"
 
 -- Prepare ColorListSelector (CLS)
 -- require "lib.ColorListSelector.ColorListConfig" -- use our local config, not the default one.
-require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
+require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file. 
+-- (it creates the global 'CLSconfig', which is mostly used by ColorListSelector, 
+-- but user code could potentially modify it if needed.) 
 local CLS = require "lib.ColorListSelector.ColorListSelector" -- Then get a handle to the API functions for CLS.
 
 
@@ -34,7 +36,18 @@ Let the DraImgList be Global.
 --]] -------------------------------------------------
 
 --[[ --- To Do --- 
-- disable RANDOM colors unless a button is clicked. 
+- use the BIG hex color list 
+- maybe start the big list at a random location initially? 
+- disable RANDOM colors on click (only spacebar) (later, add a "randomize" call & button)
+- write function to saveColor(1), and revertColor(1) to abstract away the different implementations
+
+
+- support BIG lists: 
+-- implement pageUp/Dn buttons 
+-- dynamically generate buttons 1 page at a time. 
+-- to a ~thumbindex scroll? 
+-- do a 2nd zoomed out list? 
+
 
 - change 'none' to '[smooth] plastic'
 - add an 'exit' button? 
@@ -180,6 +193,9 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 
+    -- overwrite the default colorList with a reformatted custom list... 
+    CLSconfig.colorList = CLS.convFlatPairsToColorList(CLSconfig.colorHexList)
+
     CLS.load() -- let ColorListSelector do its initialization
 end
 
@@ -297,9 +313,6 @@ end
 
 function love.mousereleased(x, y, button, istouch, presses)
     print("mouse at " .. x, y)
-
-    colorDragonImageList()
-    materialDragonImageList()
 
     CLS.mousereleased(x, y)
 end

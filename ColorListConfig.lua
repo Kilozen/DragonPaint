@@ -27,7 +27,7 @@ local colorsCanvasData = { -- config for the colorsCanvas
     --[[
         Here you can set the position & width of the Color Selection window. 
     --]]
-    xPos = 1000, -- x position on the app screen
+    xPos = 1050, -- x position on the app screen
     yPos = 0, -- initial y positio (this value will change when user scrolls the window)
     width = 200, -- ('height' is calculated based on list length)
     speed = 8, -- scroll speed for things like arrow keys
