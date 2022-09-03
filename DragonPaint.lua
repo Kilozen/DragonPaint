@@ -9,9 +9,9 @@ local strict = require "lib.strict"
 
 -- Prepare ColorListSelector (CLS)
 -- require "lib.ColorListSelector.ColorListConfig" -- use our local config, not the default one.
-require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file. 
--- (it creates the global 'CLSconfig', which is mostly used by ColorListSelector, 
--- but user code could potentially modify it if needed.) 
+require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
+-- (it creates the global 'CLSconfig', which is mostly used by ColorListSelector,
+-- but user code could potentially modify it if needed.)
 local CLS = require "lib.ColorListSelector.ColorListSelector" -- Then get a handle to the API functions for CLS.
 
 
@@ -36,9 +36,8 @@ Let the DraImgList be Global.
 --]] -------------------------------------------------
 
 --[[ --- To Do --- 
-- use the BIG hex color list 
 - maybe start the big list at a random location initially? 
-- disable RANDOM colors on click (only spacebar) (later, add a "randomize" call & button)
+- add a "randomize" call & button
 - write function to saveColor(1), and revertColor(1) to abstract away the different implementations
 
 
@@ -193,7 +192,7 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 
-    -- overwrite the default colorList with a reformatted custom list... 
+    -- overwrite the default colorList with a reformatted custom list...
     CLSconfig.colorList = CLS.convFlatPairsToColorList(CLSconfig.colorHexList)
 
     CLS.load() -- let ColorListSelector do its initialization
@@ -205,29 +204,49 @@ function love.update(dt) -- Love2D calls this 60 times per second.
 end
 
 
-local function drawDragon()
-    -- image placement, declare with default values, then recalculate below.
-    local xloc = 10
-    local yloc = 10
+-- change a "percentage" coordinate (0.0 to 1.0) into pixels
+local function calcXcoord(xPercent, xOffset)
+    -- (you'd never call this unless you were using Percent)
+    local ww = lg.getWidth() -- window width (it might be resizable)
+    return (math.floor(ww * xPercent) + xOffset)
+end
 
-    local ww = lg.getWidth() -- window width
+
+local function calcYcoord(yPercent, yOffset)
+    return (math.floor(lg.getHeight() * yPercent) + yOffset)
+end
+
+
+local function drawDragon()
+    ----------------------------------------------------------------------
+    -- adjust dragon image Size --
+    local ww = lg.getWidth() -- window width (it might be resizable)
     local wh = lg.getHeight()
     local iw = DraImgList.outlines.image:getWidth() -- image width
     local ih = DraImgList.outlines.image:getHeight()
 
-    local wiRatio = wh / ih -- window to image ratio (scaling by 'height', the smaller dimension)
+    local wiRatio = (wh / ih) -- window to image ratio (scaling by 'height', the smaller dimension)
 
     -- how much the images need to be scaled
     local xscale = wiRatio
-    local yscale = wiRatio -- just scale dimensions evenly.. no stretching
+    local yscale = wiRatio -- just scale dimensions evenly (by width).. no stretching
+    ----------------------------------------------------------------------
 
-    -- Centering offset
+    -- find offset to Center the image
     -- x-offset needed is the Window center minus the Image center.
-    -- how far is the image center from the window center?
+    -- How far is the image center from the window center?
     -- draw it that far to the right...
-    xloc = (ww / 2) - (math.floor(iw / 2 * xscale))
-    yloc = (wh / 2) - (math.floor(ih / 2 * yscale))
-    -- (the above could be calculated  once, then passed in)
+    local xCtr = (ww / 2) - (math.floor(iw / 2 * xscale))
+    local yCtr = (wh / 2) - (math.floor(ih / 2 * yscale))
+
+    -----------------------------------------------------------------------
+    -- do we want to Shift the image by some Percentage, or by some pixels?
+    local xPctShift = 0 -- percent to shift image center (e.g. -0.2 is 20% left)
+    local yPctShift = 0
+
+    local xloc = calcXcoord(xPctShift, xCtr + 0) -- final Position of dragon image
+    local yloc = calcYcoord(yPctShift, yCtr + 0)
+    -----------------------------------------------------------------------
 
 
     -- Draw the Dragon parts (in colors)
@@ -258,6 +277,14 @@ local function drawDragon()
 end
 
 
+local function drawUI()
+    local xPctShift = 0.82 -- percentage coordinate of screen to draw Color list at
+
+    CLSconfig.colorsCanvasData.xPos = calcXcoord(xPctShift, 0)
+    CLS.draw()
+end
+
+
 function love.draw() -- Love2D calls this 60 times per second.
     lg.setFont(lg.newFont(18))
     lg.setColor(0, .5, 1)
@@ -272,7 +299,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     end
 
     drawDragon()
-    CLS.draw()
+    drawUI()
 end
 
 
