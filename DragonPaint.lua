@@ -8,7 +8,8 @@ local strict = require "lib.strict"
 --print(strict.version)
 
 -- Prepare ColorListSelector (CLS)
-require "lib.ColorListSelector.ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
+-- require "lib.ColorListSelector.ColorListConfig" -- use our local config, not the default one.
+require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
 local CLS = require "lib.ColorListSelector.ColorListSelector" -- Then get a handle to the API functions for CLS.
 
 
@@ -30,8 +31,11 @@ This program requires the Love2D framework.
 ! Remember to run Auto-Format before major checkins (or right after), so random diffs don't appear. 
 
 Let the DraImgList be Global. 
+--]] -------------------------------------------------
 
-TODO: 
+--[[ --- To Do --- 
+- disable RANDOM colors unless a button is clicked. 
+
 - change 'none' to '[smooth] plastic'
 - add an 'exit' button? 
 - have a lightly textured backgroud, always moving (clouds?)
@@ -214,12 +218,12 @@ local function drawDragon()
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
-    -- kmkmk FIX this to store/set colors consistently 
+    -- kmkmk FIX this to store/set colors consistently
     lg.setColor(unpack(DraImgList.primary.color))
     love.graphics.setColor(CLS.buttonList[1].color)
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
-    -- kmk FIX: 
+    -- kmk FIX:
     lg.setColor(unpack(DraImgList.secondary.color))
     love.graphics.setColor(CLS.buttonList[2].color)
     lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
@@ -238,18 +242,6 @@ local function drawDragon()
 end
 
 
-local function drawUI()
-    -- UI Color Selector Buttons...
-    love.graphics.setColor(CLS.buttonList[2].color)
-    love.graphics.circle("fill", 200, 70, 40)
-
-    love.graphics.setColor(CLS.buttonList[1].color)
-    love.graphics.circle("fill", 240, 50, 20)
-
-    CLS.draw()
-end
-
-
 function love.draw() -- Love2D calls this 60 times per second.
     lg.setFont(lg.newFont(18))
     lg.setColor(0, .5, 1)
@@ -264,7 +256,7 @@ function love.draw() -- Love2D calls this 60 times per second.
     end
 
     drawDragon()
-    drawUI()
+    CLS.draw()
 end
 
 
