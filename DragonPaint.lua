@@ -1,7 +1,7 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.07"
-local dpVdate = "8/1/22"
+local dpVersion = "0.08"
+local dpVdate = "9/3/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 local strict = require "lib.strict"
@@ -36,9 +36,13 @@ Let the DraImgList be Global.
 --]] -------------------------------------------------
 
 --[[ --- To Do --- 
-- maybe start the big list at a random location initially? 
-- add a "randomize" call & button
+- REMEMBER to do main development for MOBILE dimensions 
+
 - write function to saveColor(1), and revertColor(1) to abstract away the different implementations
+
+- add a "randomize" call & button
+
+- maybe start the big list at a random location initially? 
 
 
 - support BIG lists: 
@@ -79,7 +83,8 @@ local function getRandomColor() -- returns a color as a Table
 end
 
 
-local function colorDragonImageList()
+-- kmk this can be DELETED once all 3 buttons are defined
+local function colorDragonImageList() -- kmk rename to 'Randomize...'
     print ""
     DraImgList.primary.color = getRandomColor()
     DraImgList.secondary.color = getRandomColor()
@@ -169,7 +174,8 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
         mobile = true
     else
         mobile = false
-        love.window.setMode(640 * 2, 360 * 2, { resizable = true })
+        local desktopScale = 2
+        love.window.setMode(640 * desktopScale, 360 * desktopScale, { resizable = true })
         -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here)
     end
 
@@ -253,6 +259,9 @@ local function drawDragon()
     lg.setColor(unpack(DraImgList.outlines.color))
     lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
 
+
+
+
     -- kmkmk FIX this to store/set colors consistently
     lg.setColor(unpack(DraImgList.primary.color))
     love.graphics.setColor(CLS.buttonList[1].color)
@@ -293,7 +302,7 @@ function love.draw() -- Love2D calls this 60 times per second.
         lg.print("Tap to change colors", 20, 35)
         lg.print(verMinutes .. " minutes", 20, 60)
     else
-        lg.print("[Space] to change colors", 20, 10)
+        lg.print("[Space] to randomize colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
         -- lg.print(verMinutes .. " minutes", 20, 60)
     end
@@ -305,7 +314,8 @@ end
 
 function love.keypressed(key)
     if key == "space" then
-        colorDragonImageList()
+        CLS.randomizeButtonColors() -- random colors from the List
+        --colorDragonImageList() -- random colors (Not from the list)
         materialDragonImageList()
     end
 

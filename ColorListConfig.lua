@@ -1,4 +1,5 @@
--- ColorListConfig:
+-- ColorListConfig -- LOCAL VERSION for DragonPaint.lua --
+
 -- contains the configurable data to be used by --> ColorListSelector.lua
 
 -- kmk todo:  create a setting for X position of the color menu...
@@ -28,7 +29,7 @@ local colorsCanvasData = { -- config for the colorsCanvas
         Here you can set the position & width of the Color Selection window. 
     --]]
     xPos = 1050, -- x position on the app screen
-    yPos = 0, -- initial y positio (this value will change when user scrolls the window)
+    yPos = 0, -- initial y position (this value will change when user scrolls the window)
     width = 200, -- ('height' is calculated based on list length)
     speed = 8, -- scroll speed for things like arrow keys
     -- Normally the canvas background color should be left as transparent black,
@@ -57,7 +58,10 @@ local csButton1 = { -- rectangle button with a text label
     width = 300,
     height = 80,
     color = { .6, .4, .4 }, -- default starting color
-    color_previous = { .6, .4, .4 }, -- kmk todo: remove this from here... add it in code/init.
+
+    -- kmk todo: remove these from here... add it in code/init.
+    color_listNumber = 1, -- kmk, actually, we could just save list numbers for everything, rather than colors...
+    color_previous = { .6, .4, .4 },
 }
 
 local csButton2 = {
@@ -67,6 +71,8 @@ local csButton2 = {
     width = 300,
     height = 80,
     color = { .4, .4, .6 }, -- default starting color
+
+    color_listNumber = 1,
     color_previous = { .4, .4, .6 },
 }
 
