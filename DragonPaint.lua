@@ -7,12 +7,17 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 local strict = require "lib.strict"
 --print(strict.version)
 
+----------------------------------
 -- Prepare ColorListSelector (CLS)
--- require "lib.ColorListSelector.ColorListConfig" -- use our local config, not the default one.
-require "ColorListConfig" -- First, get the CLS Config data from wherever you keep the file.
--- (it creates the global 'CLSconfig', which is mostly used by ColorListSelector,
--- but user code could potentially modify it if needed.)
+-- First, get the CLS Config data (from wherever you keep the file)
+-- User app can choose to use the default (lib) config, or call a custom one of their own.
+require "lib.ColorListSelector.ColorListConfig" -- (the default library config)
+-- require "ColorListConfig" -- (a local 'custom' config) 
+
+-- (ColorListConfig creates the global 'CLSconfig', which is mostly used by
+--  ColorListSelector, but user code could potentially modify it if needed.)
 local CLS = require "lib.ColorListSelector.ColorListSelector" -- Then get a handle to the API functions for CLS.
+----------------------------------
 
 
 local lg = love.graphics -- handy abbreviation
@@ -38,12 +43,8 @@ Let the DraImgList be Global.
 --[[ --- To Do --- 
 - REMEMBER to do main development for MOBILE dimensions 
 
-- write function to saveColor(1), and revertColor(1) to abstract away the different implementations
-
-- add a "randomize" call & button
-
-- maybe start the big list at a random location initially? 
-
+- write function to saveColor(1), and revertColor(1) to abstract away the different implementations 
+- use remember colors by their List index, not by rgb values. 
 
 - support BIG lists: 
 -- implement pageUp/Dn buttons 
@@ -63,8 +64,12 @@ and leave no trace of their origin.. other than their name.)
 
 
 -- dragon image info
-local DraImgList = {} -- a table of 4 body regions: {region image,  color}
+local DraImgList = {} -- a table of 4 body regions.
+-- kmk update: current COLORS will just be stored in the CLS ~Button objects.
 
+local iPrimary = 1 -- some constants to make the code more readable
+local iSecondary = 2
+local iTertiary = 3
 
 local function getRandomColor() -- returns a color as a Table
 
@@ -84,7 +89,7 @@ end
 
 
 -- kmk this can be DELETED once all 3 buttons are defined
-local function colorDragonImageList() -- kmk rename to 'Randomize...'
+local function randomColorDraImgList()
     print ""
     DraImgList.primary.color = getRandomColor()
     DraImgList.secondary.color = getRandomColor()
@@ -161,7 +166,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
     DraImgList.secondary = { image = lg.newImage(imfile.secondary) }
     DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
 
-    colorDragonImageList()
+    randomColorDraImgList()
     materialDragonImageList()
 end
 
@@ -198,8 +203,8 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
     print ""
 
-    -- overwrite the default colorList with a reformatted custom list...
-    CLSconfig.colorList = CLS.convFlatPairsToColorList(CLSconfig.colorHexList)
+    -- Overwrite the default colorList with a reformatted custom list...
+    CLSconfig.colorList = CLS.formatColorHexList(CLSconfig.colorHexList)
 
     CLS.load() -- let ColorListSelector do its initialization
 end
@@ -263,12 +268,12 @@ local function drawDragon()
 
 
     -- kmkmk FIX this to store/set colors consistently
-    lg.setColor(unpack(DraImgList.primary.color))
+    --lg.setColor(unpack(DraImgList.primary.color))
     love.graphics.setColor(CLS.buttonList[1].color)
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
     -- kmk FIX:
-    lg.setColor(unpack(DraImgList.secondary.color))
+    --lg.setColor(unpack(DraImgList.secondary.color))
     love.graphics.setColor(CLS.buttonList[2].color)
     lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
@@ -315,7 +320,7 @@ end
 function love.keypressed(key)
     if key == "space" then
         CLS.randomizeButtonColors() -- random colors from the List
-        --colorDragonImageList() -- random colors (Not from the list)
+        --randomColorDraImgList() -- random colors (Not from the list)
         materialDragonImageList()
     end
 
@@ -336,7 +341,8 @@ end
 
 function love.touchpressed(id, x, y, dx, dy, pressure)
     -- kmk instead, wouldn't it be better to just use mousepressed(istouch) mousereleased(istouch)?
-    colorDragonImageList()
+    CLS.randomizeButtonColors() -- random colors from the List
+    --randomColorDraImgList() -- random colors (Not from the list)
     materialDragonImageList()
 end
 
