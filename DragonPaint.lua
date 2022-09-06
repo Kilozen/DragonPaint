@@ -12,7 +12,7 @@ local strict = require "lib.strict"
 -- First, get the CLS Config data (from wherever you keep the file)
 -- User app can choose to use the default (lib) config, or call a custom one of their own.
 require "lib.ColorListSelector.ColorListConfig" -- (the default library config)
--- require "ColorListConfig" -- (a local 'custom' config) 
+-- require "ColorListConfig" -- (a local 'custom' config)
 
 -- (ColorListConfig creates the global 'CLSconfig', which is mostly used by
 --  ColorListSelector, but user code could potentially modify it if needed.)
@@ -171,7 +171,7 @@ local function loadDragonImageList() -- store image regions, materials, & colors
 end
 
 
-function love.load() -- this is where Love2D does it's FIRST initialization.
+function love.load() -- This is where Love2D does it's FIRST initialization.
     --create game window if not already in conf.lua
     --love.window.setMode(640, 360, {resizable=true, minwidth=400, minheight=300} )
 
@@ -194,17 +194,29 @@ function love.load() -- this is where Love2D does it's FIRST initialization.
     loadDragonImageList()
 
     -- TEMPORARY --
-    print ""
-    print("window width/2 = " .. math.floor(lg.getWidth() / 2))
-    print("window height/2 = " .. math.floor(lg.getHeight() / 2))
+    -- print ""
+    -- print("window width/2 = " .. math.floor(lg.getWidth() / 2))
+    -- print("window height/2 = " .. math.floor(lg.getHeight() / 2))
 
-    local img = DraImgList.outlines.image
-    print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
-    print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
-    print ""
+    -- local img = DraImgList.outlines.image
+    -- print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
+    -- print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
+    -- print ""
 
-    -- Overwrite the default colorList with a reformatted custom list...
-    CLSconfig.colorList = CLS.formatColorHexList(CLSconfig.colorHexList)
+    --[[ -- CLS Color List setup -- 
+        At this point, you can either proceed with CLSconfig.colorList 
+        as-is if you already have one defined in the correct format. 
+
+        Otherwise, if you have a Color List in the simpler Flat CSV 
+        format, you can call CLS.formatColorList() to convert it to 
+        the runtime format. 
+    --]]
+    -- (Overwrite the default colorList with a reformatted Flat list) 
+    CLSconfig.colorList = CLS.formatColorList(CLSconfig.colorListData)
+
+    -- Otherwise, if you have a Color List in any Non-Standard format, you
+    -- can call your own custom 'formatColorList()' function to normalize it.
+    --CLSconfig.colorList = CLS.formatColorHexList(CLSconfig.colorHexList)
 
     CLS.load() -- let ColorListSelector do its initialization
 end
@@ -267,17 +279,16 @@ local function drawDragon()
 
 
 
-    -- kmkmk FIX this to store/set colors consistently
-    --lg.setColor(unpack(DraImgList.primary.color))
-    love.graphics.setColor(CLS.buttonList[1].color)
+    --lg.setColor(unpack(DraImgList.primary.color)) -- old.. Delete 
+    love.graphics.setColor(CLS.buttonList[iPrimary].color)
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
-    -- kmk FIX:
     --lg.setColor(unpack(DraImgList.secondary.color))
-    love.graphics.setColor(CLS.buttonList[2].color)
+    love.graphics.setColor(CLS.buttonList[iSecondary].color)
     lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
-    lg.setColor(unpack(DraImgList.tertiary.color))
+    lg.setColor(unpack(DraImgList.tertiary.color)) -- DELETE ME 
+    --love.graphics.setColor(CLS.buttonList[iTertiary].color)
     lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
 
 
