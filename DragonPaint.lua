@@ -7,6 +7,7 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 local strict = require "lib.strict"
 --print(strict.version)
 
+
 ----------------------------------
 -- Prepare ColorListSelector (CLS)
 -- First, get the CLS Config data (from wherever you keep the file)
@@ -42,6 +43,9 @@ Let the DraImgList be Global.
 
 --[[ --- To Do --- 
 - REMEMBER to do main development for MOBILE dimensions 
+
+-- Color list overlaps buttons, if you click on a color that overlaps a button, button and color are selected at once.
+-- Streching screen cuts off selector buttons
 
 - write function to saveColor(1), and revertColor(1) to abstract away the different implementations 
 - use remember colors by their List index, not by rgb values. 
@@ -179,7 +183,7 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
         mobile = true
     else
         mobile = false
-        local desktopScale = 2
+        local desktopScale = 1 -- 1 = mobile, 2 = computer
         love.window.setMode(640 * desktopScale, 360 * desktopScale, { resizable = true })
         -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here)
     end
@@ -211,12 +215,12 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
         format, you can call CLS.formatColorList() to convert it to 
         the runtime format. 
     --]]
-    -- (Overwrite the default colorList with a reformatted Flat list) 
+    -- (Overwrite the default colorList with a reformatted Flat list)
     CLSconfig.colorList = CLS.formatColorList(CLSconfig.colorListData)
 
     -- Otherwise, if you have a Color List in any Non-Standard format, you
     -- can call your own custom 'formatColorList()' function to normalize it.
-    --CLSconfig.colorList = CLS.formatColorHexList(CLSconfig.colorHexList)
+    CLSconfig.colorList = CLS.formatColorHexList(CLSconfig.colorHexList)
 
     CLS.load() -- let ColorListSelector do its initialization
 end
@@ -267,7 +271,7 @@ local function drawDragon()
     local xPctShift = 0 -- percent to shift image center (e.g. -0.2 is 20% left)
     local yPctShift = 0
 
-    local xloc = calcXcoord(xPctShift, xCtr + 0) -- final Position of dragon image
+    local xloc = calcXcoord(xPctShift, xCtr + -100) -- final Position of dragon image
     local yloc = calcYcoord(yPctShift, yCtr + 0)
     -----------------------------------------------------------------------
 
@@ -279,7 +283,7 @@ local function drawDragon()
 
 
 
-    --lg.setColor(unpack(DraImgList.primary.color)) -- old.. Delete 
+    --lg.setColor(unpack(DraImgList.primary.color)) -- old.. Delete
     love.graphics.setColor(CLS.buttonList[iPrimary].color)
     lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
 
@@ -287,9 +291,10 @@ local function drawDragon()
     love.graphics.setColor(CLS.buttonList[iSecondary].color)
     lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
 
-    lg.setColor(unpack(DraImgList.tertiary.color)) -- DELETE ME 
-    --love.graphics.setColor(CLS.buttonList[iTertiary].color)
+    --lg.setColor(unpack(DraImgList.tertiary.color))
+    love.graphics.setColor(CLS.buttonList[iTertiary].color)
     lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
+
 
 
     -- draw the Material types (textures)
@@ -303,8 +308,17 @@ end
 
 
 local function drawUI()
-    local xPctShift = 0.82 -- percentage coordinate of screen to draw Color list at
 
+    -- update button positions if screen is resized 
+    CLSconfig.buttonList[1].x = calcXcoord(.70, 0)
+    CLSconfig.buttonList[2].x = calcXcoord(.70, 0)
+    CLSconfig.buttonList[3].x = calcXcoord(.70, 0)
+
+    CLSconfig.buttonList[1].y = calcYcoord(.05, 0)
+    CLSconfig.buttonList[2].y = calcYcoord(.25, 0)
+    CLSconfig.buttonList[3].y = calcYcoord(.45, 0)
+
+    local xPctShift = 0.82 -- percentage coordinate of screen to draw Color list at
     CLSconfig.colorsCanvasData.xPos = calcXcoord(xPctShift, 0)
     CLS.draw()
 end
