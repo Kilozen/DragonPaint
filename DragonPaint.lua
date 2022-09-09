@@ -1,7 +1,7 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.08"
-local dpVdate = "9/3/22"
+local dpVersion = "0.09"
+local dpVdate = "9/8/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 local strict = require "lib.strict"
@@ -42,13 +42,16 @@ Let the DraImgList be Global.
 --]] -------------------------------------------------
 
 --[[ --- To Do --- 
+    K: 
+    - get CLS working again on Mobile 
+    - (make a little graphics 'console' for debugging mobile?)
+    - add 'function' buttons, (like 'randomize color(s)') for touchscreen 
+
+    Eva: 
+    [x] 1- add 3rd color button 
+    [/] 2- set to phone dimensions & arrange screen layout 
+
 - REMEMBER to do main development for MOBILE dimensions 
-
--- Color list overlaps buttons, if you click on a color that overlaps a button, button and color are selected at once.
--- Streching screen cuts off selector buttons
-
-- write function to saveColor(1), and revertColor(1) to abstract away the different implementations 
-- use remember colors by their List index, not by rgb values. 
 
 - support BIG lists: 
 -- implement pageUp/Dn buttons 
@@ -61,9 +64,14 @@ Let the DraImgList be Global.
 - add an 'exit' button? 
 - have a lightly textured backgroud, always moving (clouds?)
 
+Once CLS is settled, make the *subfolder* ColorListConfig.lua appropriate for the 'Demos'
+and switch to use the *local* copy, for DragonPaint. 
+
 - make a "credits" page.. spash screen or exit screen saying who the devs/owners 
 are and what the "official" source site is.  (because games can be copied around 
 and leave no trace of their origin.. other than their name.)
+
+- make an idle timeout so it doesn't run down phone batteries! 
 --]] -------------------------------------------------
 
 
@@ -193,6 +201,9 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
     lg.setBackgroundColor(.9, .9, .8) -- pale tan
     lg.setColor(0, 0, 0)
 
+    local limits = love.graphics.getSystemLimits()
+    print('GL_MAX_TEXTURE_SIZE = ' .. limits.texturesize)
+
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
     loadDragonImageList()
@@ -309,7 +320,7 @@ end
 
 local function drawUI()
 
-    -- update button positions if screen is resized 
+    -- update button positions if screen is resized
     CLSconfig.buttonList[1].x = calcXcoord(.70, 0)
     CLSconfig.buttonList[2].x = calcXcoord(.70, 0)
     CLSconfig.buttonList[3].x = calcXcoord(.70, 0)
@@ -329,8 +340,8 @@ function love.draw() -- Love2D calls this 60 times per second.
     lg.setColor(0, .5, 1)
 
     if mobile then
-        lg.print("Tap to change colors", 20, 35)
-        lg.print(verMinutes .. " minutes", 20, 60)
+        --lg.print("Tap to change colors", 20, 35)
+        lg.print(verMinutes .. " minutes", 5, 5)
     else
         lg.print("[Space] to randomize colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
@@ -363,14 +374,14 @@ function love.wheelmoved(x, y)
     CLS.wheelmoved(x, y)
 end
 
-
+--[[
 function love.touchpressed(id, x, y, dx, dy, pressure)
     -- kmk instead, wouldn't it be better to just use mousepressed(istouch) mousereleased(istouch)?
     CLS.randomizeButtonColors() -- random colors from the List
     --randomColorDraImgList() -- random colors (Not from the list)
     materialDragonImageList()
 end
-
+--]]
 
 function love.mousepressed(x, y, button, istouch, presses)
     -- (user code here if desired)
@@ -380,7 +391,7 @@ end
 
 
 function love.mousereleased(x, y, button, istouch, presses)
-    print("mouse at " .. x, y)
+    -- print("mouse at " .. x, y)
 
     CLS.mousereleased(x, y)
 end
