@@ -101,15 +101,6 @@ local function getRandomColor() -- returns a color as a Table
 end
 
 
--- kmk this can be DELETED once all 3 buttons are defined
-local function randomColorDraImgList()
-    print ""
-    DraImgList.primary.color = getRandomColor()
-    DraImgList.secondary.color = getRandomColor()
-    DraImgList.tertiary.color = getRandomColor()
-end
-
-
 local function materialDragonImageList()
 
     -- having an indexed table makes random picking easier than elseifs
@@ -150,40 +141,6 @@ local function materialDragonImageList()
 end
 
 
-local function loadDragonImageList() -- store image regions, materials, & colors
-
-    local drImage = nil -- dragon Image var
-    local rColorT = {} -- table to hold 3 parts of an RGB color
-
-    -- [] maybe make a "config file" of available images?
-    local imfile_old = {
-        outlines  = "images/dragontestLines.png",
-        primary   = "images/dragontestPrimary.png",
-        secondary = "images/dragontestSecondary.png",
-        tertiary  = "images/dragontestTertiary.png"
-    }
-
-    local imfile = {
-        outlines  = "images/simpleAgricosLines.png",
-        primary   = "images/simpleAgricosPrimary.png",
-        secondary = "images/simpleAgricosSecondary.png",
-        tertiary  = "images/simpleAgricosTertiary.png",
-    }
-
-    -- color won't matter for the Outline, because it's black, but
-    -- just in case anything in the outline image is filled white (e.g. eyes)
-    -- the color for the "outline" image should be set to white.
-    rColorT = { 1, 1, 1 }
-    DraImgList.outlines = { image = lg.newImage(imfile.outlines), color = rColorT } -- kmk: move this color set to where the others are
-    DraImgList.primary = { image = lg.newImage(imfile.primary) } -- (have to use ~constructor syntax for first assignment)
-    DraImgList.secondary = { image = lg.newImage(imfile.secondary) }
-    DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
-
-    randomColorDraImgList()
-    materialDragonImageList()
-end
-
-
 function love.load() -- This is where Love2D does it's FIRST initialization.
     --create game window if not already in conf.lua
     --love.window.setMode(640, 360, {resizable=true, minwidth=400, minheight=300} )
@@ -207,17 +164,50 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
 
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
+    local function loadDragonImageList() -- store image regions, materials, & colors
+
+        -- kmk this can be DELETED once all 3 buttons are defined
+        local function randomColorDraImgList()
+            print ""
+            DraImgList.primary.color = getRandomColor()
+            DraImgList.secondary.color = getRandomColor()
+            DraImgList.tertiary.color = getRandomColor()
+        end
+
+
+        local drImage = nil -- dragon Image var
+        local rColorT = {} -- table to hold 3 parts of an RGB color
+
+        -- [] maybe make a "config file" of available images?
+        local imfile_old = {
+            outlines  = "images/dragontestLines.png",
+            primary   = "images/dragontestPrimary.png",
+            secondary = "images/dragontestSecondary.png",
+            tertiary  = "images/dragontestTertiary.png"
+        }
+
+        local imfile = {
+            outlines  = "images/simpleAgricosLines.png",
+            primary   = "images/simpleAgricosPrimary.png",
+            secondary = "images/simpleAgricosSecondary.png",
+            tertiary  = "images/simpleAgricosTertiary.png",
+        }
+
+        -- color won't matter for the Outline, because it's black, but
+        -- just in case anything in the outline image is filled white (e.g. eyes)
+        -- the color for the "outline" image should be set to white.
+        rColorT = { 1, 1, 1 }
+        DraImgList.outlines = { image = lg.newImage(imfile.outlines), color = rColorT } -- kmk: move this color set to where the others are
+        DraImgList.primary = { image = lg.newImage(imfile.primary) } -- (have to use ~constructor syntax for first assignment)
+        DraImgList.secondary = { image = lg.newImage(imfile.secondary) }
+        DraImgList.tertiary = { image = lg.newImage(imfile.tertiary) }
+
+        randomColorDraImgList()
+        materialDragonImageList()
+    end
+
+
     loadDragonImageList()
-
-    -- TEMPORARY --
-    -- print ""
-    -- print("window width/2 = " .. math.floor(lg.getWidth() / 2))
-    -- print("window height/2 = " .. math.floor(lg.getHeight() / 2))
-
-    -- local img = DraImgList.outlines.image
-    -- print("0.5 image width/2 = " .. math.floor(img:getWidth() / 2 * 0.5))
-    -- print("0.5 image height/2 = " .. math.floor(img:getHeight() / 2 * 0.5))
-    -- print ""
 
     --[[ -- CLS Color List setup -- 
         At this point, you can either proceed with CLSconfig.colorList 
@@ -256,86 +246,6 @@ local function calcYcoord(yPercent, yOffset)
 end
 
 
-local function drawDragon()
-    ----------------------------------------------------------------------
-    -- adjust dragon image Size --
-    local ww = lg.getWidth() -- window width (it might be resizable)
-    local wh = lg.getHeight()
-    local iw = DraImgList.outlines.image:getWidth() -- image width
-    local ih = DraImgList.outlines.image:getHeight()
-
-    local wiRatio = (wh / ih) -- window to image ratio (scaling by 'height', the smaller dimension)
-
-    -- how much the images need to be scaled
-    local xscale = wiRatio
-    local yscale = wiRatio -- just scale dimensions evenly (by width).. no stretching
-    ----------------------------------------------------------------------
-
-    -- find offset to Center the image
-    -- x-offset needed is the Window center minus the Image center.
-    -- How far is the image center from the window center?
-    -- draw it that far to the right...
-    local xCtr = (ww / 2) - (math.floor(iw / 2 * xscale))
-    local yCtr = (wh / 2) - (math.floor(ih / 2 * yscale))
-
-    -----------------------------------------------------------------------
-    -- do we want to Shift the image by some Percentage, or by some pixels?
-    local xPctShift = 0 -- percent to shift image center (e.g. -0.2 is 20% left)
-    local yPctShift = 0
-
-    local xloc = calcXcoord(xPctShift, xCtr + -100) -- final Position of dragon image
-    local yloc = calcYcoord(yPctShift, yCtr + 0)
-    -----------------------------------------------------------------------
-
-
-    -- Draw the Dragon parts (in colors)
-    lg.setColor(unpack(DraImgList.outlines.color))
-    lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
-
-
-
-
-    --lg.setColor(unpack(DraImgList.primary.color)) -- old.. Delete
-    love.graphics.setColor(CLS.buttonList[iPrimary].color)
-    lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
-
-    --lg.setColor(unpack(DraImgList.secondary.color))
-    love.graphics.setColor(CLS.buttonList[iSecondary].color)
-    lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
-
-    --lg.setColor(unpack(DraImgList.tertiary.color))
-    love.graphics.setColor(CLS.buttonList[iTertiary].color)
-    lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
-
-
-
-    -- draw the Material types (textures)
-    --lg.setColor(0, 0, 0) -- (if you wanted "all black" textures)
-    local matAlpha = 0.6 -- a value of 0.6 or so lets the underneath show through.
-    lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors.
-    lg.draw(DraImgList.primary.matImage, xloc, yloc, 0, xscale, yscale)
-    lg.draw(DraImgList.secondary.matImage, xloc, yloc, 0, xscale, yscale)
-    lg.draw(DraImgList.tertiary.matImage, xloc, yloc, 0, xscale, yscale)
-end
-
-
-local function drawUI()
-
-    -- update button positions if screen is resized
-    CLSconfig.buttonList[1].x = calcXcoord(.70, 0)
-    CLSconfig.buttonList[2].x = calcXcoord(.70, 0)
-    CLSconfig.buttonList[3].x = calcXcoord(.70, 0)
-
-    CLSconfig.buttonList[1].y = calcYcoord(.05, 0)
-    CLSconfig.buttonList[2].y = calcYcoord(.25, 0)
-    CLSconfig.buttonList[3].y = calcYcoord(.45, 0)
-
-    local xPctShift = 0.75 -- percentage coordinate of screen to draw Color list at
-    CLSconfig.colorsCanvasData.xPos = calcXcoord(xPctShift, 0)
-    CLS.draw()
-end
-
-
 function love.draw() -- Love2D calls this 60 times per second.
     lg.setFont(lg.newFont(18))
     lg.setColor(0, .5, 1)
@@ -349,7 +259,88 @@ function love.draw() -- Love2D calls this 60 times per second.
         -- lg.print(verMinutes .. " minutes", 20, 60)
     end
 
+    local function drawDragon()
+        ----------------------------------------------------------------------
+        -- adjust dragon image Size --
+        local ww = lg.getWidth() -- window width (it might be resizable)
+        local wh = lg.getHeight()
+        local iw = DraImgList.outlines.image:getWidth() -- image width
+        local ih = DraImgList.outlines.image:getHeight()
+
+        local wiRatio = (wh / ih) -- window to image ratio (scaling by 'height', the smaller dimension)
+
+        -- how much the images need to be scaled
+        local xscale = wiRatio
+        local yscale = wiRatio -- just scale dimensions evenly (by width).. no stretching
+        ----------------------------------------------------------------------
+
+        -- find offset to Center the image
+        -- x-offset needed is the Window center minus the Image center.
+        -- How far is the image center from the window center?
+        -- draw it that far to the right...
+        local xCtr = (ww / 2) - (math.floor(iw / 2 * xscale))
+        local yCtr = (wh / 2) - (math.floor(ih / 2 * yscale))
+
+        -----------------------------------------------------------------------
+        -- do we want to Shift the image by some Percentage, or by some pixels?
+        local xPctShift = 0 -- percent to shift image center (e.g. -0.2 is 20% left)
+        local yPctShift = 0
+
+        local xloc = calcXcoord(xPctShift, xCtr + -100) -- final Position of dragon image
+        local yloc = calcYcoord(yPctShift, yCtr + 0)
+        -----------------------------------------------------------------------
+
+
+        -- Draw the Dragon parts (in colors)
+        lg.setColor(unpack(DraImgList.outlines.color))
+        lg.draw(DraImgList.outlines.image, xloc, yloc, 0, xscale, yscale)
+
+
+
+
+        --lg.setColor(unpack(DraImgList.primary.color)) -- old.. Delete
+        love.graphics.setColor(CLS.buttonList[iPrimary].color)
+        lg.draw(DraImgList.primary.image, xloc, yloc, 0, xscale, yscale)
+
+        --lg.setColor(unpack(DraImgList.secondary.color))
+        love.graphics.setColor(CLS.buttonList[iSecondary].color)
+        lg.draw(DraImgList.secondary.image, xloc, yloc, 0, xscale, yscale)
+
+        --lg.setColor(unpack(DraImgList.tertiary.color))
+        love.graphics.setColor(CLS.buttonList[iTertiary].color)
+        lg.draw(DraImgList.tertiary.image, xloc, yloc, 0, xscale, yscale)
+
+
+
+        -- draw the Material types (textures)
+        --lg.setColor(0, 0, 0) -- (if you wanted "all black" textures)
+        local matAlpha = 0.6 -- a value of 0.6 or so lets the underneath show through.
+        lg.setColor(1, 1, 1, matAlpha) -- setting to White means the textures will show in their source-file colors.
+        lg.draw(DraImgList.primary.matImage, xloc, yloc, 0, xscale, yscale)
+        lg.draw(DraImgList.secondary.matImage, xloc, yloc, 0, xscale, yscale)
+        lg.draw(DraImgList.tertiary.matImage, xloc, yloc, 0, xscale, yscale)
+    end
+
+
     drawDragon()
+
+    local function drawUI()
+
+        -- update button positions if screen is resized
+        CLSconfig.buttonList[1].x = calcXcoord(.70, 0)
+        CLSconfig.buttonList[2].x = calcXcoord(.70, 0)
+        CLSconfig.buttonList[3].x = calcXcoord(.70, 0)
+
+        CLSconfig.buttonList[1].y = calcYcoord(.05, 0)
+        CLSconfig.buttonList[2].y = calcYcoord(.25, 0)
+        CLSconfig.buttonList[3].y = calcYcoord(.45, 0)
+
+        local xPctShift = 0.75 -- percentage coordinate of screen to draw Color list at
+        CLSconfig.colorsCanvasData.xPos = calcXcoord(xPctShift, 0)
+        CLS.draw()
+    end
+
+
     drawUI()
 end
 
@@ -402,6 +393,12 @@ function love.mousereleased(x, y, button, istouch, presses)
     -- print("mouse at " .. x, y)
 
     CLS.mousereleased(x, y, button, istouch, presses)
+end
+
+
+function love.resize(w, h)
+
+    CLS.resize(w, h)
 end
 
 
