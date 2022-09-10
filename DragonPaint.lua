@@ -1,7 +1,7 @@
 local thisFile = "DragonPaint.lua"
 local gameTitle = "DragonPaint"
-local dpVersion = "0.09"
-local dpVdate = "9/8/22"
+local dpVersion = "0.10"
+local dpVdate = "9/9/22"
 print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 
 local strict = require "lib.strict"
@@ -43,21 +43,22 @@ Let the DraImgList be Global.
 
 --[[ --- To Do --- 
     K: 
-    - get CLS working again on Mobile 
+    [x] get CLS working again on Mobile 
+    [ ] make it Fit mobile screens exactly 
+    [ ] add 'function' buttons, (like 'randomize color(s)') for touchscreen 
+    - make an Idle Timeout on mobile, so it doesn't drain battery in background 
     - (make a little graphics 'console' for debugging mobile?)
-    - add 'function' buttons, (like 'randomize color(s)') for touchscreen 
 
     Eva: 
     [x] 1- add 3rd color button 
     [/] 2- set to phone dimensions & arrange screen layout 
 
-- REMEMBER to do main development for MOBILE dimensions 
+    REMEMBER to do main development for MOBILE dimensions 
 
-- support BIG lists: 
--- implement pageUp/Dn buttons 
--- dynamically generate buttons 1 page at a time. 
--- to a ~thumbindex scroll? 
--- do a 2nd zoomed out list? 
+    -- Improve support for BIG lists? 
+    dynamically generate buttons 1 page at a time. 
+    to a ~thumbindex scroll? 
+    do a 2nd zoomed out list? 
 
 
 - change 'none' to '[smooth] plastic'
@@ -329,7 +330,7 @@ local function drawUI()
     CLSconfig.buttonList[2].y = calcYcoord(.25, 0)
     CLSconfig.buttonList[3].y = calcYcoord(.45, 0)
 
-    local xPctShift = 0.82 -- percentage coordinate of screen to draw Color list at
+    local xPctShift = 0.75 -- percentage coordinate of screen to draw Color list at
     CLSconfig.colorsCanvasData.xPos = calcXcoord(xPctShift, 0)
     CLS.draw()
 end
@@ -340,8 +341,8 @@ function love.draw() -- Love2D calls this 60 times per second.
     lg.setColor(0, .5, 1)
 
     if mobile then
-        --lg.print("Tap to change colors", 20, 35)
-        lg.print(verMinutes .. " minutes", 5, 5)
+        lg.print("Tap left margin to randomize colors", 5, 5)
+        lg.print(verMinutes .. " minutes", 5, 35)
     else
         lg.print("[Space] to randomize colors", 20, 10)
         lg.print("[Esc] to exit", 20, 35)
@@ -374,6 +375,7 @@ function love.wheelmoved(x, y)
     CLS.wheelmoved(x, y)
 end
 
+
 --[[
 function love.touchpressed(id, x, y, dx, dy, pressure)
     -- kmk instead, wouldn't it be better to just use mousepressed(istouch) mousereleased(istouch)?
@@ -384,16 +386,22 @@ end
 --]]
 
 function love.mousepressed(x, y, button, istouch, presses)
-    -- (user code here if desired)
 
-    CLS.mousepressed(x, y)
+    -- kmk ToDo: implement a separate button type for this:
+    if istouch and x < 200 then
+        CLS.randomizeButtonColors() -- random colors from the List
+        --randomColorDraImgList() -- random colors (Not from the list)
+        materialDragonImageList()
+    end
+
+    CLS.mousepressed(x, y, button, istouch, presses)
 end
 
 
 function love.mousereleased(x, y, button, istouch, presses)
     -- print("mouse at " .. x, y)
 
-    CLS.mousereleased(x, y)
+    CLS.mousereleased(x, y, button, istouch, presses)
 end
 
 
