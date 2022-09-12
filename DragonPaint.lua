@@ -7,6 +7,7 @@ print("[" .. thisFile .. "] version " .. dpVersion .. "\n")
 local strict = require "lib.strict"
 --print(strict.version)
 
+local showGrDebug = true -- (whether to show dev. prints on the graphic screen)
 
 ----------------------------------
 -- Prepare ColorListSelector (CLS)
@@ -145,13 +146,25 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
     --create game window if not already in conf.lua
     --love.window.setMode(640, 360, {resizable=true, minwidth=400, minheight=300} )
 
-    if love.system.getOS() == "Android" then
+    local limits = love.graphics.getSystemLimits()
+    print('GL_MAX_TEXTURE_SIZE = ' .. limits.texturesize)
+
+    local dispWidth, dispHeight = love.window.getDesktopDimensions()
+    print(".window.getDesktopDimensions() = ", dispWidth, dispHeight)
+
+
+    local sysOS = love.system.getOS()
+    print(".system.getOS() = " .. sysOS)
+    if sysOS == "Android" then
         mobile = true
     else
         mobile = false
         local desktopScale = 1 -- 1 = mobile, 2 = computer
-        love.window.setMode(640 * desktopScale, 360 * desktopScale, { resizable = true })
+        -- love.window.setMode(640 * desktopScale, 360 * desktopScale, { resizable = true })
         -- (fix? to get rid of the blink & resize, could set window to nil in conf.lua and only create them here)
+
+        -- "Nearly Full-Screen" 
+        love.window.setMode(dispWidth, dispHeight - 62, { fullscreen = false, resizable = true, y = 30 })
     end
 
     love.window.setTitle(gameTitle .. "  v" .. dpVersion .. "-" .. verMinutes)
@@ -159,9 +172,8 @@ function love.load() -- This is where Love2D does it's FIRST initialization.
     lg.setBackgroundColor(.9, .9, .8) -- pale tan
     lg.setColor(0, 0, 0)
 
-    local limits = love.graphics.getSystemLimits()
-    print('GL_MAX_TEXTURE_SIZE = ' .. limits.texturesize)
 
+    ---------------------------------------------------------------------------------
     math.randomseed(os.time()) -- (lua5.1 always returns nil)
 
     local function loadDragonImageList() -- store image regions, materials, & colors
@@ -247,17 +259,6 @@ end
 
 
 function love.draw() -- Love2D calls this 60 times per second.
-    lg.setFont(lg.newFont(18))
-    lg.setColor(0, .5, 1)
-
-    if mobile then
-        lg.print("Tap left margin to randomize colors", 5, 5)
-        lg.print(verMinutes .. " minutes", 5, 35)
-    else
-        lg.print("[Space] to randomize colors", 20, 10)
-        lg.print("[Esc] to exit", 20, 35)
-        -- lg.print(verMinutes .. " minutes", 20, 60)
-    end
 
     local function drawDragon()
         ----------------------------------------------------------------------
@@ -342,6 +343,26 @@ function love.draw() -- Love2D calls this 60 times per second.
 
 
     drawUI()
+
+    -- write Application Text to screen
+    lg.setFont(lg.newFont(18))
+    lg.setColor(0, .5, 1)
+    if mobile then
+        lg.print("Tap left margin to randomize colors", 5, 5)
+
+        if showGrDebug then
+            lg.print(verMinutes .. " minutes", 5, 35)
+            local _, _, flags = love.window.getMode()
+            -- The window's flags contain the index of the monitor it's currently in.
+            local width, height = love.window.getDesktopDimensions(flags.display)
+            lg.setColor(0, 0, 0)
+            love.graphics.print(("display %d: %d x %d"):format(flags.display, width, height), 5, 100)
+        end
+    else
+        lg.print("[Space] to randomize colors", 20, 10)
+        lg.print("[Esc] to exit", 20, 35)
+        -- lg.print(verMinutes .. " minutes", 20, 60)
+    end
 end
 
 
